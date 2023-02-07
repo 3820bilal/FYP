@@ -1,10 +1,10 @@
 {
 "toplevelfile":{
-    "file_name": "tb_upcounter.sv",
+    "file_name": "Baseboard.sv",
     "folder_name": "Baseboard",
     "child_path": "..\\LAGO\\Baseboard"
 },
-"tb_upcounter":{
+"Baseboard":{
     "ports": {
         "clk": {
             "type": "input",
@@ -13,6 +13,30 @@
         "reset": {
             "type": "input",
             "range": "None"
+        }
+    }
+},
+"bilal":{
+    "ports": {
+        "clk": {
+            "type": "input",
+            "range": "None"
+        },
+        "reset": {
+            "type": "input",
+            "range": "None"
+        },
+        "en": {
+            "type": "input",
+            "range": "None"
+        },
+        "clr": {
+            "type": "input",
+            "range": "[16:0]"
+        },
+        "count": {
+            "type": "output",
+            "range": "[17:0]"
         }
     }
 }

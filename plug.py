@@ -15,9 +15,9 @@ with open("key_val_file.json", "r")as f:
 os.chdir('..\library')
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-i', '--instance_name', help='Name of instance')
+parser.add_argument('-i', '--instance_name', default='inst_uut', help='Name of instance')
 parser.add_argument('-f', '--file_name',
-                    help='Name of file from which instance is taken')
+                    help='Name of file from which instance is taken',required=True)
 args = parser.parse_args()
 file = args.file_name
 instance = args.instance_name
