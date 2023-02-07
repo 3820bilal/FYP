@@ -1,0 +1,19 @@
+{
+"toplevelfile":{
+    "file_name": "tb_upcounter.sv",
+    "folder_name": "Baseboard",
+    "child_path": "..\\LAGO\\Baseboard"
+},
+"tb_upcounter":{
+    "ports": {
+        "clk": {
+            "type": "input",
+            "range": "None"
+        },
+        "reset": {
+            "type": "input",
+            "range": "None"
+        }
+    }
+}
+}
