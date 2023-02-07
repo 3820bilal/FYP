@@ -9,26 +9,26 @@ child_path = r'..\LAGO\Baseboard'
 ######################### setting name of instance & body  ############################
 
 
-def set_instance_name(f_name, input, output):
+def set_instance_name(f_name, inputs, outputs):
     m_name = f_name.replace(".sv", "")
-    if input or output:
-        Body = f"module {m_name} (\ninput\tlogic\t\t\t\tclk,\ninput\tlogic\t\t\t\treset,"
-        if input:
-            for inp in input:
-                i = " "
-                inpo = f"\ninput\tlogic\t\t\t{(i.join(inp))},"
+    if inputs or outputs:
+        Body = f"module {m_name} (\ninput\tlogic\t\tclk,\ninput\tlogic\t\treset,"
+        if inputs:
+            for inp in inputs:
+                i = ""
+                inpo = f"\ninput\tlogic\t\t{(i.join(inp))},"
                 Body = Body+inpo
-        if output:
-            for out in output:
-                o = " "
-                outu = f"\noutput\tlogic\t\t\t{o.join(out)},"
+        if outputs:
+            for out in outputs:
+                o = ""
+                outu = f"\noutput\tlogic\t\t{o.join(out)},"
                 Body = Body+outu
         Body = Body.removesuffix(",")
         end = "\n\n);\nendmodule"
         Body = Body+end
         print(Body)
     else:
-        Body = f'''module {m_name} (\ninput\tlogic\t\t\tclk,\ninput\tlogic\t\t\treset,\n\n);\nendmodule'''
+        Body = f'''module {m_name} (\ninput\tlogic\t\tclk,\ninput\tlogic\t\treset,\n\n);\nendmodule'''
         print(Body)
     return Body
 
@@ -36,37 +36,37 @@ def set_instance_name(f_name, input, output):
 
 
 def default():
-    global input, output, f_name
+    global inputs, outputs, f_name
     print(f_name)
     print(os.getcwd())
     try:
         os.makedirs(folder_name)
         os.chdir(folder_name)
         with open(f_name, 'w+') as file:
-            file.write(set_instance_name(f_name, input))
+            file.write(set_instance_name(f_name, inputs,outputs))
             print(f"{f_name} created ")
     except:
         os.chdir(folder_name)
         with open(f_name, 'w+') as file:
-            file.write(set_instance_name(f_name, input, output))
+            file.write(set_instance_name(f_name, inputs, outputs))
             print(f"{f_name} created ")
 #########################################################
 
 
 def name():
-    global input, output
+    global inputs, outputs
     print(os.getcwd())
     try:
         # print(f"{folder_name} already exists in {list_modules.path}!")
         os.chdir(folder_name)
         with open(f_name, 'w+') as file:
-            file.write(set_instance_name(f_name, input, output))
+            file.write(set_instance_name(f_name, inputs, outputs))
             print(f"{f_name} created ")
     except:
         os.makedirs(folder_name)
         os.chdir(folder_name)
         with open(f_name, 'w+') as file:
-            file.write(set_instance_name(f_name, input, output))
+            file.write(set_instance_name(f_name, inputs, outputs))
             print(f"{f_name} created ")
 
 
@@ -100,11 +100,11 @@ if __name__ == '__main__':
                         default="Baseboard.sv", help='Name of the file')
     parser.add_argument('-i', '--inputs', type=str,
                         nargs='+', help='Input port names')
-    parser.add_argument('-ir', '--input_ranges', type=str,
+    parser.add_argument('-ir', '--input_ranges', default='None',type=str,
                         nargs='+', help='Input port ranges')
     parser.add_argument('-o', '--outputs', type=str,
                         nargs='+', help='Output port names')
-    parser.add_argument('-or', '--output_ranges', type=str,
+    parser.add_argument('-or', '--output_ranges',default='None', type=str,
                         nargs='+', help='Output port ranges')
     args = parser.parse_args()
 
@@ -120,6 +120,10 @@ if __name__ == '__main__':
         default()
     m_name, module_dict = storing_data_in_Json(
         f_name, inputs, input_ranges, outputs, output_ranges)
+
+    # print(m_name)
+    # print(module_dict)
+
 
     os.chdir('..')
     os.chdir('Baseboard')
@@ -144,5 +148,8 @@ if __name__ == '__main__':
             x = f.truncate(r_end)
         f.write(',\n')
         f.write(f'\"{m_name}\":')
+        # json.dump(module_dict[m_name], f, indent=4)
         json.dump(module_dict[m_name], f, indent=4)
         f.write("\n}")
+
+    

@@ -1,22 +1,10 @@
 {
 "toplevelfile":{
-    "file_name": "Baseboard.sv",
+    "file_name": "clock",
     "folder_name": "Baseboard",
     "child_path": "..\\LAGO\\Baseboard"
 },
-"Baseboard":{
-    "ports": {
-        "clk": {
-            "type": "input",
-            "range": "None"
-        },
-        "reset": {
-            "type": "input",
-            "range": "None"
-        }
-    }
-},
-"bilal":{
+"clock":{
     "ports": {
         "clk": {
             "type": "input",
@@ -30,13 +18,9 @@
             "type": "input",
             "range": "None"
         },
-        "clr": {
+        "count_max": {
             "type": "input",
-            "range": "[16:0]"
-        },
-        "count": {
-            "type": "output",
-            "range": "[17:0]"
+            "range": "[31:0]"
         }
     }
 }

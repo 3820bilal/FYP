@@ -1,0 +1,8 @@
+module clock (
+input	logic		clk,
+input	logic		reset,
+input	logic		en,
+input	logic		count_max
+
+);
+endmodule
