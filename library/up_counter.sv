@@ -7,8 +7,8 @@ module up_counter
 	input 					reset,
 	input				    en,
 	input 	    [WIDTH-1:0]	count_max,
-	output reg 				clr,
-	output reg	[WIDTH-1:0]	count
+	output logic 				clr,
+	output logic	[WIDTH-1:0]	count
 );
 
 	always@(posedge clk)

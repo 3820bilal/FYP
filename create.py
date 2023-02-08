@@ -8,65 +8,83 @@ output = ''
 child_path = r'..\LAGO\Baseboard'
 ######################### setting name of instance & body  ############################
 
-
-def set_instance_name(f_name, inputs, outputs):
+def set_instance_name(f_name, inputs, outputs, input_ranges, output_ranges):
     m_name = f_name.replace(".sv", "")
     if inputs or outputs:
         Body = f"module {m_name} (\ninput\tlogic\t\tclk,\ninput\tlogic\t\treset,"
         if inputs:
-            for inp in inputs:
-                i = ""
-                inpo = f"\ninput\tlogic\t\t{(i.join(inp))},"
-                Body = Body+inpo
+            i = ""
+            for inp,inp_ranges in zip(inputs,input_ranges):
+                if inp_ranges == 'None':
+                    inpo = f"\ninput\tlogic\t\t{(i.join(inp))},"
+                    Body = Body + inpo
+                elif inp_ranges is None:
+                    inpo = f"\ninput\tlogic\t\t{(i.join(inp))},"
+                    Body = Body + inpo
+                else:
+                    inpo = f"\ninput\tlogic\t\t{inp_ranges}\t\t{(i.join(inp))},"
+                    Body = Body + inpo
         if outputs:
-            for out in outputs:
-                o = ""
-                outu = f"\noutput\tlogic\t\t{o.join(out)},"
-                Body = Body+outu
-        Body = Body.removesuffix(",")
+            o = ""
+            for out,opt_ranges in zip(outputs,output_ranges):
+                if opt_ranges == 'None':
+                    outu = f"\noutput\tlogic\t\t{o.join(out)},"
+                    Body = Body + outu
+                elif opt_ranges is None:
+                    outu = f"\noutput\tlogic\t\t{o.join(out)},"
+                    Body = Body + outu
+                else:
+                    outu = f"\noutput\tlogic\t\t{opt_ranges}\t\t{o.join(out)},"
+                    Body = Body + outu
+        Body = Body.rstrip(",")
         end = "\n\n);\nendmodule"
-        Body = Body+end
+        Body = Body + end
         print(Body)
     else:
         Body = f'''module {m_name} (\ninput\tlogic\t\tclk,\ninput\tlogic\t\treset,\n\n);\nendmodule'''
         print(Body)
     return Body
 
+
 #########################################################
 
 
 def default():
-    global inputs, outputs, f_name
+    global inputs, outputs, f_name,input_ranges,output_ranges
     print(f_name)
     print(os.getcwd())
     try:
         os.makedirs(folder_name)
         os.chdir(folder_name)
         with open(f_name, 'w+') as file:
-            file.write(set_instance_name(f_name, inputs,outputs))
+            # file.write(set_instance_name(f_name, inputs,outputs,input_ranges,output_ranges))
+            file.write(set_instance_name(f_name, inputs, outputs,input_ranges,output_ranges))
+
             print(f"{f_name} created ")
     except:
         os.chdir(folder_name)
         with open(f_name, 'w+') as file:
-            file.write(set_instance_name(f_name, inputs, outputs))
+            # file.write(set_instance_name(f_name, inputs, outputs,input_ranges,output_ranges))
+            file.write(set_instance_name(f_name, inputs, outputs,input_ranges,output_ranges))
+
             print(f"{f_name} created ")
 #########################################################
 
 
 def name():
-    global inputs, outputs
+    global inputs, outputs,input_ranges,output_ranges
     print(os.getcwd())
     try:
         # print(f"{folder_name} already exists in {list_modules.path}!")
         os.chdir(folder_name)
         with open(f_name, 'w+') as file:
-            file.write(set_instance_name(f_name, inputs, outputs))
+            file.write(set_instance_name(f_name, inputs, outputs,input_ranges,output_ranges))
             print(f"{f_name} created ")
     except:
         os.makedirs(folder_name)
         os.chdir(folder_name)
         with open(f_name, 'w+') as file:
-            file.write(set_instance_name(f_name, inputs, outputs))
+            file.write(set_instance_name(f_name, inputs, outputs,input_ranges,output_ranges))
             print(f"{f_name} created ")
 
 
@@ -104,7 +122,7 @@ if __name__ == '__main__':
                         nargs='+', help='Input port ranges')
     parser.add_argument('-o', '--outputs', type=str,
                         nargs='+', help='Output port names')
-    parser.add_argument('-or', '--output_ranges',default='None', type=str,
+    parser.add_argument('-or', '--output_ranges',default='None',
                         nargs='+', help='Output port ranges')
     args = parser.parse_args()
 
