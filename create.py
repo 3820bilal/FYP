@@ -1,6 +1,8 @@
 import argparse
 import os
 import json
+import colorama
+from colorama import Fore
 f_name = "Baseboard.sv"
 folder_name = 'Baseboard'
 input = ''
@@ -60,14 +62,14 @@ def default():
             # file.write(set_instance_name(f_name, inputs,outputs,input_ranges,output_ranges))
             file.write(set_instance_name(f_name, inputs, outputs,input_ranges,output_ranges))
 
-            print(f"{f_name} created ")
+            print(Fore.BLUE + f"{f_name} created" + Fore.RESET)
     except:
         os.chdir(folder_name)
         with open(f_name, 'w+') as file:
             # file.write(set_instance_name(f_name, inputs, outputs,input_ranges,output_ranges))
             file.write(set_instance_name(f_name, inputs, outputs,input_ranges,output_ranges))
 
-            print(f"{f_name} created ")
+            print(Fore.BLUE + f"{f_name} created" + Fore.RESET)
 #########################################################
 
 
@@ -79,13 +81,13 @@ def name():
         os.chdir(folder_name)
         with open(f_name, 'w+') as file:
             file.write(set_instance_name(f_name, inputs, outputs,input_ranges,output_ranges))
-            print(f"{f_name} created ")
+            print(Fore.BLUE + f"{f_name} created" + Fore.RESET)
     except:
         os.makedirs(folder_name)
         os.chdir(folder_name)
         with open(f_name, 'w+') as file:
             file.write(set_instance_name(f_name, inputs, outputs,input_ranges,output_ranges))
-            print(f"{f_name} created ")
+            print(Fore.BLUE + f"{f_name} created" + Fore.RESET)
 
 
 #########################################################
@@ -138,10 +140,6 @@ if __name__ == '__main__':
         default()
     m_name, module_dict = storing_data_in_Json(
         f_name, inputs, input_ranges, outputs, output_ranges)
-
-    # print(m_name)
-    # print(module_dict)
-
 
     os.chdir('..')
     os.chdir('Baseboard')

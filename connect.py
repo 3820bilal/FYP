@@ -2,6 +2,8 @@ import argparse
 import os
 import json
 import re
+import colorama
+from colorama import Fore
 found = False
 os.chdir('Baseboard')
 with open('key_val_file.json', 'r') as f:
@@ -20,7 +22,8 @@ def check_range_equality(inst1, inst2, k1, k2):
         if range1 == range2:
             found = True
         else:
-            print(f'Range {range1} is not equal to {range2}')
+            print(
+                Fore.RED + f'You entered range of {k1} {range1} and range of {k2}  {range2}, which are not equal!' + Fore.RESET)
             exit()
     return found
 
@@ -42,9 +45,9 @@ def change_line_in_instance(found, instance1, input_ports, output_ports):
         pattern = rf'{instance1}\s*(([\s\S]*?));'
         content = re.sub(pattern, block, content)
         # print(content)
-        print('Ports Connected.')
+        print(Fore.BLUE + 'Ports Connection successfull.' + Fore.RESET)
     else:
-        print('Error: Not connected.')
+        print(Fore.RED + 'Error: Not connected.' + Fore.RESET)
         exit()
 
     # Write the modified content back to the file
@@ -67,6 +70,9 @@ if __name__ == '__main__':
                         required=True, help='Output ports of the second instance')
     # Parse the arguments
     args = parser.parse_args()
+    if len(args.input_ports) != len(args.output_ports):
+        print(Fore.RED + 'Number of input ports is not equal to number of output ports.' + Fore.RESET)
+        exit()
     found = check_range_equality(
         args.instance1, args.instance2, args.input_ports, args.output_ports)
     change_line_in_instance(found, args.instance1,

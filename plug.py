@@ -2,7 +2,8 @@ import os
 import argparse
 import json
 import Extracting_data
-
+import colorama
+from colorama import Fore
 os.chdir('..\Baseboard')
 with open("key_val_file.json", "r")as f:
     content = json.load(f)
@@ -53,8 +54,8 @@ def extract_data(file):
         lines = content.split('\n')
         for i, line in enumerate(lines):
             if instance in line:
-                print(
-                    f'instance {instance} already exists at line {i+1}. Please Enter another name ')
+                print(Fore.RED +
+                    f'instance {instance} already exist at line {i+1}. Please Enter different name!' + Fore.RESET)
                 exit()
         with open(f"{fileName}", "a+") as f:
             if 'endmodule' in content:
