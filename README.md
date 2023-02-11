@@ -39,13 +39,12 @@ python .\create.py -f filename -i enable -o clear -ir None -or [3:0]
 
 None is range for input **enable** and **[3:0]** is range for output clear
 
-## [plug.py](https://github.com/3820bilal/FYP/blob/main/create.py)
+## [plug.py](https://github.com/3820bilal/FYP/blob/main/plug.py)
 
-This file will create the instance of file given in argument. (**the file should be available in library**).
+This file will create the instance of file that is given in argument. (**the file should be available in library**).
 
-To run this file in terminal use
-
-you can give argument as 
+To run this file use
+argument after -i is for instance name and argument after -f is for file name
 ```bash
 python .\plug.py -i instance_name -f filename 
 ```
