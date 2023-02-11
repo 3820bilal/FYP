@@ -55,7 +55,7 @@ def extract_data(file):
         for i, line in enumerate(lines):
             if instance in line:
                 print(Fore.RED +
-                    f'instance {instance} already exist at line {i+1}. Please Enter different name!' + Fore.RESET)
+                    f'Error: instance {instance} already exist at line {i+1}. Please Enter different name!' + Fore.RESET)
                 exit()
         with open(f"{fileName}", "a+") as f:
             if 'endmodule' in content:
