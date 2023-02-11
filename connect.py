@@ -22,7 +22,7 @@ def check_range_equality(inst1, inst2, k1, k2):
             if range1 == range2:
                 found = True
             else:
-                print(Fore.RED + f'Error: Rrange of {k1} is {range1} and range of {k2} is {range2}, which are not equal!' + Fore.RESET)
+                print(Fore.RED + f'Error: Range of {k1} is {range1} and range of {k2} is {range2}, which are not equal!' + Fore.RESET)
         return found
     except KeyError:
         for i1, i2, k1, k2 in zip(args.instance1, args.instance2, args.input_ports, args.output_ports):
