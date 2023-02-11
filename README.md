@@ -47,7 +47,7 @@ argument after **-f** is for file name
 ```bash
 python .\plug.py -i instance_name -f filename 
 ```
-If you are using ubuntu terminal the use **python3** instead of **python**
+If you are using ubuntu terminal then use **python3** instead of **python**
 
 ## [connect.py](https://github.com/3820bilal/FYP/blob/main/connect.py)
 
@@ -61,5 +61,6 @@ argument after **-op** is for ports of output instance
 ```bash
 python .\connect.py -i input instance_name -o output instance name -ip input port -op output port
 ```
-you can give **list** of input ports and output ports to connect
-If you are using ubuntu terminal the use **python3** instead of **python**
+you can give **list** of input ports and output ports to connect.
+
+If you are using ubuntu terminal then use **python3** instead of **python**
