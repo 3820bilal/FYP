@@ -42,7 +42,9 @@ None is range for input **enable** and **[3:0]** is range for output **clear**
 This file will create the instance of file that is given in argument. (**the file should be available in library**).
 
 To run this file use following commands
+
 argument after **-i** is for instance name 
+
 argument after **-f** is for file name
 ```bash
 python .\plug.py -i instance_name -f filename 
@@ -54,9 +56,13 @@ If you are using ubuntu terminal then use **python3** instead of **python**
 This file will connect the ports of one instance with the ports of another instance.
 
 To run this file use following commands
+
 argument after **-i** is for input instance
+
 argument after **-o** is for output instance 
+
 argument after **-ip** is for ports of input instance
+
 argument after **-op** is for ports of output instance 
 ```bash
 python .\connect.py -i input instance_name -o output instance name -ip input port -op output port
