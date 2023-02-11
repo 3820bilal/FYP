@@ -35,7 +35,7 @@ If you want to add more inputs and outputs in the file use following commands
 python .\create.py -f filename -i enable -o clear -ir None -or [3:0]
 ```
 
-None is range for input **enable** and **[3:0]** is range for output clear
+None is range for input **enable** and **[3:0]** is range for output **clear**
 
 ## [plug.py](https://github.com/3820bilal/FYP/blob/main/plug.py)
 
