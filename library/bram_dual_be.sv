@@ -9,22 +9,22 @@ module bram_dual_be			// Readfirst mode with byte enable
 		parameter INIT_END_ADDR		= RAM_DEPTH-1
 	)
 (
-  input logic		[clogb2(RAM_DEPTH-1)-1:0] addra,   // Port A address bus, width determined from RAM_DEPTH
-  input logic		[clogb2(RAM_DEPTH-1)-1:0] addrb,   // Port B address bus, width determined from RAM_DEPTH
-  input logic		[(NB_COL*COL_WIDTH)-1:0] dina,   // Port A RAM Input data
-  input logic		[(NB_COL*COL_WIDTH)-1:0] dinb,   // Port B RAM Input data
-  input logic		clka,                            // Port A clock
-  input logic		clkb,                            // Port B clock
-  input logic		[NB_COL-1:0] wea,                // Port A write enable
-  input logic		[NB_COL-1:0] web,                // Port B write enable
-  input logic		ena,                             // Port A RAM Enable, for additional power savings, disable port when not in use
-  input logic		enb,                             // Port B RAM Enable, for additional power savings, disable port when not in use
-  input logic		rsta,				 // Port A output reset (does not affect memory contents)
-  input logic		rstb,                            // Port B output reset (does not affect memory contents)
-  input logic		regcea,                          // Port A output register enable
-  input logic		regceb,                          // Port B output register enable
-  output logic 	[(NB_COL*COL_WIDTH)-1:0] douta, // Port A RAM output data
-  output logic 	[(NB_COL*COL_WIDTH)-1:0] doutb // Port B RAM output data
+  input		[clogb2(RAM_DEPTH-1)-1:0] addra,   // Port A address bus, width determined from RAM_DEPTH
+  input		[clogb2(RAM_DEPTH-1)-1:0] addrb,   // Port B address bus, width determined from RAM_DEPTH
+  input		[(NB_COL*COL_WIDTH)-1:0] dina,   // Port A RAM Input data
+  input		[(NB_COL*COL_WIDTH)-1:0] dinb,   // Port B RAM Input data
+  input		clka,                            // Port A clock
+  input		clkb,                            // Port B clock
+  input		[NB_COL-1:0] wea,                // Port A write enable
+  input		[NB_COL-1:0] web,                // Port B write enable
+  input		ena,                             // Port A RAM Enable, for additional power savings, disable port when not in use
+  input		enb,                             // Port B RAM Enable, for additional power savings, disable port when not in use
+  input		rsta,				 // Port A output reset (does not affect memory contents)
+  input		rstb,                            // Port B output reset (does not affect memory contents)
+  input		regcea,                          // Port A output register enable
+  input		regceb,                          // Port B output register enable
+  output 	[(NB_COL*COL_WIDTH)-1:0] douta, // Port A RAM output data
+  output 	[(NB_COL*COL_WIDTH)-1:0] doutb // Port B RAM output data
 );
   reg [(NB_COL*COL_WIDTH)-1:0] ram_name [RAM_DEPTH-1:0];
   reg [(NB_COL*COL_WIDTH)-1:0] ram_data_a = {(NB_COL*COL_WIDTH){1'b0}};
@@ -102,7 +102,7 @@ module bram_dual_be			// Readfirst mode with byte enable
 
   //  The following function calculates the address width based on specified RAM depth
   function integer clogb2;
-    input logic integer depth;
+    input integer depth;
       for (clogb2=0; depth>0; clogb2=clogb2+1)
         depth = depth >> 1;
   endfunction

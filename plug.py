@@ -1,24 +1,25 @@
+#!/usr/bin/python3
 import os
 import argparse
 import json
 import Extracting_data
 import colorama
 from colorama import Fore
-os.chdir('..\Baseboard')
-with open("key_val_file.json", "r")as f:
+os.chdir('..')
+os.chdir('Baseboard')
+
+with open("key_val_file.json","r") as f:
     content = json.load(f)
     for i in content:
         fileName = content['toplevelfile']['file_name']
         folder_name = content['toplevelfile']['folder_name']
-        child_path = content['toplevelfile']['child_path']
-
-
-os.chdir('..\library')
-
+      
+os.chdir('..')
+os.chdir('library')
 parser = argparse.ArgumentParser()
-parser.add_argument('-i', '--instance_name', default='inst_uut', help='Name of instance')
+parser.add_argument('-i', '--instance_name', help='Name of instance')
 parser.add_argument('-f', '--file_name',
-                    help='Name of file from which instance is taken',required=True)
+                    help='Name of file from which instance is taken')
 args = parser.parse_args()
 file = args.file_name
 instance = args.instance_name
@@ -27,7 +28,7 @@ instance = args.instance_name
 def extract_data(file):
     with open(file, 'r') as f:
         lines = f.readlines()
-    module_name = "module_name"
+    # module_name = "module_name"
     in_module = False
     input_or_output_count = 0
     output_string = ""
@@ -54,8 +55,8 @@ def extract_data(file):
         lines = content.split('\n')
         for i, line in enumerate(lines):
             if instance in line:
-                print(Fore.RED +
-                    f'Error: instance {instance} already exist at line {i+1}. Please Enter different name!' + Fore.RESET)
+                print(Fore.RED + 
+                    f'Error: instance {instance} already exists at line {i+1}. Please Enter different name!' + Fore.RESET)
                 exit()
         with open(f"{fileName}", "a+") as f:
             if 'endmodule' in content:
@@ -64,8 +65,11 @@ def extract_data(file):
                 f.write('\n\n' + output_string)
                 f.write(');')
                 f.write('\n\nendmodule')
+            print(Fore.LIGHTBLUE_EX + f'instance {instance} is pluged' + Fore.RESET)
+                
 
 
+# extract_data('reg.sv')
 extract_data(file)
 
 os.chdir('..')
@@ -74,12 +78,12 @@ data = Extracting_data.get_ranges_from_file(file)
 
 os.chdir('..')
 os.chdir('Baseboard')
-with open("key_val_file.json", "r") as f:
+with open("key_val_file.json", "rb") as f:
     content = f.read()
+    f.seek(0,2)
 with open('key_val_file.json', 'a+') as f:
-    if "}" in content:
-        r_end = (f.tell())-3
-        x = f.truncate(r_end)
+    r_end = (f.tell())-1
+    x = f.truncate(r_end)
     f.write(f',\n\"{instance}\":')
-    json.dump(data, f, indent=4)
+    json.dump(data, f,indent=4)
     f.write("\n}")

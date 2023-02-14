@@ -3,26 +3,26 @@ module axis_mux_4to1
 		parameter	WIDTH 		= 16
 	)
 	(  
-	input logic		[1:0]			sel,
-	input logic		[WIDTH-1:0]		data_0,
-	input logic						valid_0,
-	output logic						ready_0,
+	input		[1:0]			sel,
+	input		[WIDTH-1:0]		data_0,
+	input						valid_0,
+	output						ready_0,
 	
-	input logic		[WIDTH-1:0]		data_1,
-	input logic						valid_1,
-	output logic						ready_1,
+	input		[WIDTH-1:0]		data_1,
+	input						valid_1,
+	output						ready_1,
 	
-	input logic		[WIDTH-1:0]		data_2,
-	input logic						valid_2,
-	output logic						ready_2,
+	input		[WIDTH-1:0]		data_2,
+	input						valid_2,
+	output						ready_2,
 	
-	input logic		[WIDTH-1:0]		data_3,
-	input logic						valid_3,
-	output logic						ready_3,
+	input		[WIDTH-1:0]		data_3,
+	input						valid_3,
+	output						ready_3,
 	
-	output logic		[WIDTH-1:0]		data,
-	output logic					valid,
-	input logic logic						ready
+	output	reg	[WIDTH-1:0]		data,
+	output	reg					valid,
+	input						ready
 	
     );
 

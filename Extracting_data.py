@@ -1,6 +1,8 @@
 import os
 import json
 os.chdir('library')
+
+
 def get_ranges_from_file(filename):
     data = {'ports': {}}
     ranges = {}
