@@ -19,9 +19,6 @@ def set_instance_name(f_name, inputs, outputs, input_ranges, output_ranges):
                 if inp_ranges == 'None' or inp_ranges == 'none':
                     inpu = f"\ninput\tlogic\t\t{(i.join(inp))},"
                     Body = Body + inpu
-                # elif inp_ranges is None:
-                #     inpo = f"\ninput\tlogic\t\t{(i.join(inp))},"
-                #     Body = Body + inpo
                 else:
                     inpu = f"\ninput\tlogic\t{inp_ranges}\t{(i.join(inp))},"
                     Body = Body + inpu
@@ -31,9 +28,6 @@ def set_instance_name(f_name, inputs, outputs, input_ranges, output_ranges):
                 if opt_ranges == 'None' or opt_ranges == 'none':
                     outu = f"\noutput\tlogic\t\t{o.join(out)},"
                     Body = Body + outu
-                # elif opt_ranges is None:
-                #     outu = f"\noutput\tlogic\t\t{o.join(out)},"
-                #     Body = Body + outu
                 else:
                     outu = f"\noutput\tlogic\t{opt_ranges}\t{o.join(out)},"
                     Body = Body + outu
@@ -157,22 +151,10 @@ if __name__ == '__main__':
         content = f.read()
         f.seek(0, 2)
     with open('key_val_file.json', 'a+') as f:
-        # if "}" in content:
         r_end = (f.tell())-1
         x = f.truncate(r_end)
         f.write(f',\"{m_name}\":')
-        # json.dump(module_dict[m_name], f, indent=4)
         json.dump(module_dict[m_name], f, indent=4)
         f.write("\n}")
 
-    # with open("key_val_file.json", "r") as f:
-    #     content = f.read()
-    # with open('key_val_file.json', 'a+') as f:
-    #     if "}" in content:
-    #         r_end = (f.tell())-3
-    #         x = f.truncate(r_end)
-    #     f.write(',\n')
-    #     f.write(f'\"{m_name}\":')
-    #     # json.dump(module_dict[m_name], f, indent=4)
-    #     json.dump(module_dict[m_name], f, indent=4)
-    #     f.write("\n}")
+
