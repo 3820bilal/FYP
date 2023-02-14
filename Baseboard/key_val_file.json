@@ -1,8 +1,7 @@
 {
 "toplevelfile":{
     "file_name": "clock.sv",
-    "folder_name": "Baseboard",
-    "child_path": "..\\LAGO\\Baseboard"
+    "folder_name": "Baseboard"
 },
 "clock":{
     "ports": {
