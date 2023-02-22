@@ -8,16 +8,16 @@ from colorama import Fore
 os.chdir('..')
 os.chdir('Baseboard')
 
-with open("key_val_file.json","r") as f:
+with open("key_val_file.json", "r") as f:
     content = json.load(f)
     for i in content:
         fileName = content['toplevelfile']['file_name']
         folder_name = content['toplevelfile']['folder_name']
-      
+
 os.chdir('..')
 os.chdir('library')
 parser = argparse.ArgumentParser()
-parser.add_argument('-i', '--instance_name', help='Name of instance')
+parser.add_argument('-n', '--instance_name', help='Name of instance')
 parser.add_argument('-f', '--file_name',
                     help='Name of file from which instance is taken')
 args = parser.parse_args()
@@ -48,15 +48,16 @@ def extract_data(file):
                 output_string += '.' + x + '\t\t\t()\n'
             else:
                 output_string += '.' + x + '\t\t\t(),\n'
+    # print(output_string)
     os.chdir('..')
     os.chdir('Baseboard')
     with open(f"{fileName}", "r") as f:
         content = f.read()
         lines = content.split('\n')
         for i, line in enumerate(lines):
-            if instance in line:
-                print(Fore.RED + 
-                    f'Error: instance {instance} already exists at line {i+1}. Please Enter different name!' + Fore.RESET)
+            if instance in line and ('input' or 'output') not in line:
+                print(Fore.RED +
+                      f'Error: instance {instance} already exists at line {i+1}. Please Enter different name!' + Fore.RESET)
                 exit()
         with open(f"{fileName}", "a+") as f:
             if 'endmodule' in content:
@@ -65,8 +66,8 @@ def extract_data(file):
                 f.write('\n\n' + output_string)
                 f.write(');')
                 f.write('\n\nendmodule')
-            print(Fore.LIGHTBLUE_EX + f'instance {instance} is pluged' + Fore.RESET)
-                
+            print(
+                Fore.GREEN + f'instance {instance} is successfully pluged in {fileName}.' + Fore.RESET)
 
 
 # extract_data('reg.sv')
@@ -80,10 +81,10 @@ os.chdir('..')
 os.chdir('Baseboard')
 with open("key_val_file.json", "rb") as f:
     content = f.read()
-    f.seek(0,2)
+    f.seek(0, 2)
 with open('key_val_file.json', 'a+') as f:
     r_end = (f.tell())-1
     x = f.truncate(r_end)
     f.write(f',\n\"{instance}\":')
-    json.dump(data, f,indent=4)
+    json.dump(data, f, indent=4)
     f.write("\n}")

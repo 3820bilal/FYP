@@ -36,7 +36,7 @@ def set_instance_name(f_name, inputs, outputs, input_ranges, output_ranges):
         Body = Body + end
         print(Body)
     else:
-        Body = f'''module {m_name} (\ninput\tlogic\t\tclk,\ninput\tlogic\t\treset,\n\n);\nendmodule'''
+        Body = f'''module {m_name} (\ninput\tlogic\t\tclk,\ninput\tlogic\t\treset\n\n);\nendmodule'''
         print(Body)
     return Body
 
@@ -156,5 +156,3 @@ if __name__ == '__main__':
         f.write(f',\"{m_name}\":')
         json.dump(module_dict[m_name], f, indent=4)
         f.write("\n}")
-
-

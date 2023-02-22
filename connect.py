@@ -15,9 +15,10 @@ with open('key_val_file.json', 'r') as f:
 
 
 def check_range_equality(inst1, inst2, k1, k2):
+    instance2 = fileName.replace('.sv','')
     global found
     try:
-        for i1, i2, k1, k2 in zip(args.instance1, args.instance2, args.input_ports, args.output_ports):
+        for i1, i2, k1, k2 in zip(args.instance1, instance2,args.input_ports, args.output_ports):
             range1 = data[inst1]['ports'][k1]['range']
             range2 = data[inst2]['ports'][k2]['range']
             if range1 == range2:
@@ -28,7 +29,7 @@ def check_range_equality(inst1, inst2, k1, k2):
                 exit()
         return found
     except KeyError:
-        for i1, i2, k1, k2 in zip(args.instance1, args.instance2, args.input_ports, args.output_ports):
+        for i1, i2, k1, k2 in zip(args.instance1,args.input_ports, args.output_ports):
             if inst1 not in data:
                 print(
                     Fore.RED + f'Error: Instance {inst1} not found' + Fore.RESET)
@@ -82,15 +83,17 @@ if __name__ == '__main__':
     # Add arguments for the instances and ports
     parser.add_argument('-i', '--instance1', required=True,
                         help='Name of the first instance')
-    parser.add_argument('-o', '--instance2', required=True,
-                        help='Name of the second instance')
+    # parser.add_argument('-o', '--instance2', required=True,
+    #                     help='Name of the second instance')
     parser.add_argument('-ip', '--input_ports', nargs='+', type=str,
                         required=True, help='Input ports of the first instance')
     parser.add_argument('-op', '--output_ports', nargs='+', type=str,
                         required=True, help='Output ports of the second instance')
     # Parse the arguments
     args = parser.parse_args()
+    
+    instance2 = fileName.replace('.sv','')
     found = check_range_equality(
-        args.instance1, args.instance2, args.input_ports, args.output_ports)
+        args.instance1, instance2, args.input_ports, args.output_ports)
     change_line_in_instance(found, args.instance1,
                             args.input_ports, args.output_ports)
