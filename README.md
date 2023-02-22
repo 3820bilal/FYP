@@ -70,3 +70,16 @@ python .\connect.py -i input instance_name -o output instance name -ip input por
 you can give **list** of input ports and output ports to connect.
 
 If you are using ubuntu terminal then use **python3** instead of **python**
+## [delete.py](https://github.com/3820bilal/FYP/blob/main/plug.py)
+
+This file will create the instance of file that is given in argument. (**the file should be available in library**).
+
+To run this file use following commands
+
+argument after **-i** is for instance name 
+
+argument after **-f** is for file name
+```bash
+python .\plug.py -i instance_name -f filename 
+```
+If you are using ubuntu terminal then use **python3** instead of **python**
