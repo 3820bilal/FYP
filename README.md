@@ -36,6 +36,7 @@ python .\create.py -f filename -i enable -o clear -ir None -or [3:0]
 ```
 
 None is range for input **enable** and **[3:0]** is range for output **clear**
+**Note:** If you are using ubuntu terminal then use **./plug.py** and then pass argument
 
 ## [plug.py](https://github.com/3820bilal/FYP/blob/main/plug.py)
 
@@ -49,7 +50,7 @@ argument after **-f** is for file name
 ```bash
 python .\plug.py -i instance_name -f filename 
 ```
-If you are using ubuntu terminal then use **python3** instead of **python**
+**Note:** If you are using ubuntu terminal then use **./plug.py** and then pass argument
 
 ## [connect.py](https://github.com/3820bilal/FYP/blob/main/connect.py)
 
@@ -69,17 +70,19 @@ python .\connect.py -i input instance_name -o output instance name -ip input por
 ```
 you can give **list** of input ports and output ports to connect.
 
-If you are using ubuntu terminal then use **python3** instead of **python**
-## [delete.py](https://github.com/3820bilal/FYP/blob/main/plug.py)
+**Note:** If you are using ubuntu terminal then use **./connect.py** and then pass argument
+## [delete.py](https://github.com/3820bilal/FYP/blob/main/delete.py)
 
-This file will create the instance of file that is given in argument. (**the file should be available in library**).
+This file can delete instance and ports from file. 
 
 To run this file use following commands
 
-argument after **-i** is for instance name 
+To delete ports, you have to use 
+
+argument after **-d** should be port to delete port and  instance to delete instance and then name of port or instance that needs to be deleted 
 
 argument after **-f** is for file name
 ```bash
-python .\plug.py -i instance_name -f filename 
+python .\delete.py -d port name_of_port -f filename 
 ```
-If you are using ubuntu terminal then use **python3** instead of **python**
+**Note:** If you are using ubuntu terminal then use **./delete.py** and then pass argument
