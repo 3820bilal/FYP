@@ -71,6 +71,17 @@ python .\connect.py -i input instance_name -o output instance name -ip input por
 you can give **list** of input ports and output ports to connect.
 
 **Note:** If you are using ubuntu terminal then use **./connect.py** and then pass argument
+## [adddata.py](https://github.com/3820bilal/FYP/blob/main/adddata.py)
+
+You can add new inputs and outputs using this file.
+
+To add new inputs and outputs use commands that are already used in create.py and pass the name of file in which you want to add ports
+
+```bash
+python .\adddata.py -d port name_of_port -f filename 
+```
+**Note:** If you are using ubuntu terminal then use **./adddata.py** and then pass argument
+
 ## [delete.py](https://github.com/3820bilal/FYP/blob/main/delete.py)
 
 This file can delete instance and ports from file. 
