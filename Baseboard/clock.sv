@@ -10,7 +10,6 @@ output	logic		clr_min,
 output	logic		[31:0]		count_min,
 output	logic		clr_hrs,
 output	logic		[31:0]		count_hrs
-
 );
 
 

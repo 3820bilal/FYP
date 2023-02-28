@@ -3,6 +3,7 @@ import os
 import argparse
 import json
 import Extracting_data
+import add_in_out
 import colorama
 from colorama import Fore
 os.chdir('..')
@@ -14,21 +15,12 @@ with open("key_val_file.json", "r") as f:
         fileName = content['toplevelfile']['file_name']
         folder_name = content['toplevelfile']['folder_name']
 
-os.chdir('..')
-os.chdir('library')
-parser = argparse.ArgumentParser()
-parser.add_argument('-n', '--instance_name', help='Name of instance')
-parser.add_argument('-f', '--file_name',
-                    help='Name of file from which instance is taken')
-args = parser.parse_args()
-file = args.file_name
-instance = args.instance_name
-
+# os.chdir('..')
+# os.chdir('library') 
 
 def extract_data(file):
-    with open(file, 'r') as f:
+    with open(f"{file}", 'r') as f:
         lines = f.readlines()
-    # module_name = "module_name"
     in_module = False
     input_or_output_count = 0
     output_string = ""
@@ -48,7 +40,6 @@ def extract_data(file):
                 output_string += '.' + x + '\t\t\t()\n'
             else:
                 output_string += '.' + x + '\t\t\t(),\n'
-    # print(output_string)
     os.chdir('..')
     os.chdir('Baseboard')
     with open(f"{fileName}", "r") as f:
@@ -71,20 +62,52 @@ def extract_data(file):
 
 
 # extract_data('reg.sv')
-extract_data(file)
 
-os.chdir('..')
-os.chdir('library')
-data = Extracting_data.get_ranges_from_file(file)
 
-os.chdir('..')
-os.chdir('Baseboard')
-with open("key_val_file.json", "rb") as f:
-    content = f.read()
-    f.seek(0, 2)
-with open('key_val_file.json', 'a+') as f:
-    r_end = (f.tell())-1
-    x = f.truncate(r_end)
-    f.write(f',\n\"{instance}\":')
-    json.dump(data, f, indent=4)
-    f.write("\n}")
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-n', '--instance_name', help='Name of instance')
+    parser.add_argument('-p', '--plug', help='Name of instance')
+    parser.add_argument('-f', '--file_name',
+                        help='Name of file from which instance is taken',type=str)
+    parser.add_argument('-i', '--inputs', type=str,
+                        nargs='+', help='Input port name')
+    parser.add_argument('-ir', '--input_ranges', type=str,
+                        nargs='+', help='Input port range')
+    parser.add_argument('-o', '--outputs', type=str,
+                        nargs='+', help='Output port name')
+    parser.add_argument('-or', '--output_ranges',
+                        nargs='+', help='Output port range')
+    args = parser.parse_args()
+    file = args.file_name
+    instance = args.instance_name
+    
+    if args.plug=='port':
+        os.chdir('..')
+        os.chdir('Baseboard')
+        inputs = args.inputs
+        input_ranges = args.input_ranges
+        outputs = args.outputs
+        output_ranges = args.output_ranges
+        add_in_out.add_inputs_outputs(
+        fileName, inputs, outputs, input_ranges, output_ranges)
+    elif args.plug=='instance':
+        os.chdir('..')
+        os.chdir('library')
+        extract_data(file)
+        os.chdir('..')
+        os.chdir('library')
+        data = Extracting_data.get_ranges_from_file(file)
+        os.chdir('..')
+        os.chdir('Baseboard')
+        with open("key_val_file.json", "rb") as f:
+            content = f.read()
+            f.seek(0, 2)
+        with open('key_val_file.json', 'a+') as f:
+            r_end = (f.tell())-1
+            x = f.truncate(r_end)
+            f.write(f',\n\"{instance}\":')
+            json.dump(data, f, indent=4)
+            f.write("\n}")
+
+

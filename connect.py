@@ -57,9 +57,10 @@ def change_line_in_instance(found, instance1, input_ports, output_ports):
             pattern = rf'\.{input_port}\s*\((?P<connected_port>\w+)\)'
             existing_connection = re.search(pattern, block)
             if existing_connection:
-                if existing_connection.group('connected_port') == output_port:
+                connected_port = existing_connection.group('connected_port')
+                if connected_port:
                     print(
-                        Fore.RED + f'Error: Port {input_port} is already connected to {output_port}.' + Fore.RESET)
+                        Fore.RED + f'Error: Port {input_port} is already connected to {connected_port}.' + Fore.RESET)
                     exit()
             pattern = rf'\.{input_port}\s*\([\s\S]*?\)'
             block = re.sub(

@@ -44,7 +44,7 @@ def delete_port(filename, port_name):
         print(Fore.GREEN +
               f"Port {port_name} has been deleted successfully." + Fore.RESET)
     else:
-        print("Port not found.")
+        print(Fore.RED + "Port not found." + Fore.RESET)
 
     with open(filename, 'w') as file:
         file.writelines(new_lines)
