@@ -3,12 +3,23 @@ import argparse
 import os
 import json
 import colorama
+
+#################### LAGO ROOT address ######################################
+def LAGO_USR_INFO(fname):
+	global LAGO_DIR;
+	file_path = os.path.expanduser("~/.LAGO_USR_INFO")
+	with open(file_path, "a+") as f:
+		f.write(f"\nTOP_FILE={fname}") #--> write current toplevel file name
+		f.seek(0)
+		LAGO_DIR=f.readline().replace("LAGO_DIR=","")+"/files/";
+		f.close()
+		LAGO_DIR=LAGO_DIR.replace("\n","")
+##############################################################################
 from colorama import Fore
+LAGO_DIR=''
 f_name = "Baseboard.sv"
 folder_name = 'Baseboard'
-######################### setting name of instance & body  ############################
-
-
+######################## setting name of instance & body  ############################
 def set_instance_name(f_name, inputs, outputs, input_ranges, output_ranges):
     m_name = f_name.replace(".sv", "")
     if inputs or outputs:
@@ -40,49 +51,12 @@ def set_instance_name(f_name, inputs, outputs, input_ranges, output_ranges):
         print(Body)
     return Body
 
-
 #########################################################
-
-
-def default():
-    global inputs, outputs, f_name, input_ranges, output_ranges
-    print(f_name)
-    print(os.getcwd())
-    try:
-        os.makedirs(folder_name)
-        os.chdir(folder_name)
-        with open(f_name, 'w+') as file:
-            file.write(set_instance_name(f_name, inputs,
-                       outputs, input_ranges, output_ranges))
-            print(Fore.LIGHTBLUE_EX + f"{f_name} created" + Fore.RESET)
-    except:
-        os.chdir(folder_name)
-        with open(f_name, 'w+') as file:
-            file.write(set_instance_name(f_name, inputs,
-                       outputs, input_ranges, output_ranges))
-
-            print(Fore.LIGHTBLUE_EX + f"{f_name} created" + Fore.RESET)
-#########################################################
-
-
 def name():
-    global inputs, outputs, input_ranges, output_ranges
-    print(os.getcwd())
-    try:
-        os.chdir(folder_name)
-        with open(f_name, 'w+') as file:
-            file.write(set_instance_name(f_name, inputs,
-                       outputs, input_ranges, output_ranges))
-            print(Fore.LIGHTBLUE_EX + f"{f_name} created" + Fore.RESET)
-    except:
-        os.makedirs(folder_name)
-        os.chdir(folder_name)
-        with open(f_name, 'w+') as file:
-            file.write(set_instance_name(f_name, inputs,
-                       outputs, input_ranges, output_ranges))
-            print(Fore.LIGHTBLUE_EX + f"{f_name} created" + Fore.RESET)
-
-
+    global inputs, outputs, input_ranges,f_name, output_ranges;
+    with open(f_name, 'w+') as file:
+        file.write(set_instance_name(f_name, inputs,outputs, input_ranges, output_ranges))
+        print(Fore.LIGHTBLUE_EX + f"{f_name} created" + Fore.RESET)
 #########################################################
 def storing_data_in_Json(f_name, inputs, input_ranges, outputs, output_ranges):
     m_name = f_name.replace(".sv", "")
@@ -126,31 +100,33 @@ if __name__ == '__main__':
     outputs = args.outputs
     output_ranges = args.output_ranges
 
-    if f_name:
-        name()
-    else:
-        default()
-    m_name, module_dict = storing_data_in_Json(
-        f_name, inputs, input_ranges, outputs, output_ranges)
-
-    os.chdir('..')
-    os.chdir('Baseboard')
+    LAGO_USR_INFO(f_name)
+    name() #->> name function called
+    os.chdir(LAGO_DIR)
+    try:
+        os.chdir(folder_name)
+    except:
+        os.mkdir(folder_name)
+        os.chdir(folder_name)
+    m_name, module_dict = storing_data_in_Json(f_name, inputs, input_ranges, outputs, output_ranges)
 
     json_data = {
         "file_name": f"{f_name}",
         "folder_name": f"{folder_name}"
     }
-    with open("key_val_file.json", "w") as jsonfile:
+
+    jname=f_name.replace(".sv","")
+    with open(f"{jname}.json", "w") as jsonfile:
         body = '{\n\"toplevelfile\":'
         end_body = '\n}'
         jsonfile.write(body)
         json.dump(json_data, jsonfile, indent=4)
         jsonfile.write(end_body)
 
-    with open("key_val_file.json", "rb") as f:
+    with open(f"{jname}.json", "rb") as f:
         content = f.read()
         f.seek(0, 2)
-    with open('key_val_file.json', 'a+') as f:
+    with open(f'{jname}.json', 'a+') as f:
         r_end = (f.tell())-1
         x = f.truncate(r_end)
         f.write(f',\"{m_name}\":')

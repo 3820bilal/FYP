@@ -36,7 +36,6 @@ python .\create.py -f filename -i enable -o clear -ir None -or [3:0]
 ```
 
 None is range for input **enable** and **[3:0]** is range for output **clear**
-**Note:** If you are using ubuntu terminal then use **./plug.py** and then pass argument
 
 ## [plug.py](https://github.com/3820bilal/FYP/blob/main/plug.py)
 
@@ -50,7 +49,7 @@ argument after **-f** is for file name
 ```bash
 python .\plug.py -i instance_name -f filename 
 ```
-**Note:** If you are using ubuntu terminal then use **./plug.py** and then pass argument
+If you are using ubuntu terminal then use **python3** instead of **python**
 
 ## [connect.py](https://github.com/3820bilal/FYP/blob/main/connect.py)
 
@@ -70,30 +69,4 @@ python .\connect.py -i input instance_name -o output instance name -ip input por
 ```
 you can give **list** of input ports and output ports to connect.
 
-**Note:** If you are using ubuntu terminal then use **./connect.py** and then pass argument
-## [adddata.py](https://github.com/3820bilal/FYP/blob/main/adddata.py)
-
-You can add new inputs and outputs using this file.
-
-To add new inputs and outputs use commands that are already used in create.py and pass the name of file in which you want to add ports
-
-```bash
-python .\adddata.py -d port name_of_port -f filename 
-```
-**Note:** If you are using ubuntu terminal then use **./adddata.py** and then pass argument
-
-## [delete.py](https://github.com/3820bilal/FYP/blob/main/delete.py)
-
-This file can delete instance and ports from file. 
-
-To run this file use following commands
-
-To delete ports, you have to use 
-
-argument after **-d** should be port to delete port and  instance to delete instance and then name of port or instance that needs to be deleted 
-
-argument after **-f** is for file name
-```bash
-python .\delete.py -d port name_of_port -f filename 
-```
-**Note:** If you are using ubuntu terminal then use **./delete.py** and then pass argument
+If you are using ubuntu terminal then use **python3** instead of **python**

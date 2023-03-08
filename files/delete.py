@@ -6,12 +6,32 @@ import os
 import argparse
 import json
 import fileinput
-os.chdir('Baseboard')
 
+LAGO_DIR=''
+Top_level_file=''
+#################### LAGO ROOT address #######################################
+def LAGO_USR_INFO():
+        global LAGO_DIR,Top_level_file,top_file
+        Linux_file_path = os.path.expanduser("~/.LAGO_USR_INFO")
+        with open(Linux_file_path, "r") as Shell_file:
+            sh_file=Shell_file.readlines()
+            LAGO_DIR=sh_file[0].replace("LAGO_DIR=","")+"/files/";
+            if top_file:
+             if f"TOP_FILE={top_file}\n" in sh_file:
+                Top_level_file=top_file
+             else:
+                print(f"{top_file} is not present")
+                exit()
+            else:
+                Top_level_file=sh_file[-1]
+        LAGO_DIR=LAGO_DIR.replace("\n","")
+        Top_level_file=Top_level_file.replace("TOP_FILE=",'')
+##############################################################################
+CURRENT_DIR=os.getcwd();
 
 def json_delete_port(filename,port_name):
     module_name = filename.replace(".sv","")
-    with open('key_val_file.json', 'r') as f:
+    with open(f"{Baseboard_path}/{Json_Top_file}.json",'r') as f:
         data = json.load(f)
 
     # Delete the "clk" port from the "ports" object within the "Baseboard" object
@@ -19,7 +39,7 @@ def json_delete_port(filename,port_name):
         del data[module_name]["ports"][port_name]
 
     # Save the updated JSON file
-    with open('key_val_file.json', 'w') as f:
+    with open(f"{Baseboard_path}/{Json_Top_file}.json",'w') as f:
         json.dump(data, f, indent=4)
 
 
@@ -52,14 +72,14 @@ def delete_port(filename, port_name):
 
 
 def json_delete_instance(instance):
-    with open('key_val_file.json', 'r') as f:
+    with open(f"{Baseboard_path}/{Json_Top_file}.json",'r') as f:
         data = json.load(f)
     # Check if the object with the specified name exists and delete it if it does
     if instance in data:
         del data[instance]
 
     # Save the updated JSON file
-    with open('key_val_file.json', 'w') as f:
+    with open(f"{Baseboard_path}/{Json_Top_file}.json", 'w') as f:
         json.dump(data, f, indent=4)
 
 
@@ -86,15 +106,22 @@ if __name__ == '__main__':
         '-f', "--file_name", help="Name of file where instance needs to be removed from")
     parser.add_argument("-d", "--delete", nargs='+',
                         help="Name of instance to be removed")
-    arg = parser.parse_args()
 
-    fileName = arg.file_name
+    parser.add_argument('-t', '--top_file', help='other top level file',type=str)
+
+    arg = parser.parse_args()
+    top_file=args.top_file
+    Top_level_file = arg.file_name
+
+    Json_Top_file=Top_level_file.replace(".sv",'')
+    LAGO_USR_INFO()
+    Baseboard_path = os.path.join(LAGO_DIR,'Baseboard')
 
     if arg.delete[0] == 'port':
         port = arg.delete[1]
-        json_delete_port(fileName,port)
-        delete_port(fileName, port)
+        json_delete_port(Top_level_file,port)
+        delete_port(Top_level_file, port)
     elif arg.delete[0] == 'instance':
         instance = arg.delete[1]
-        delete_instance(fileName, instance)
+        delete_instance(Top_level_file, instance)
         json_delete_instance(instance)
