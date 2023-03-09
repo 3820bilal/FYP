@@ -1,0 +1,47 @@
+{
+    "toplevelfile": {
+        "file_name": "file1.sv",
+        "folder_name": "Baseboard"
+    },
+    "file1": {
+        "ports": {
+            "clk": {
+                "type": "input",
+                "range": "None"
+            },
+            "reset": {
+                "type": "input",
+                "range": "None"
+            },
+            "xyz": {
+                "type": "input",
+                "range": "None"
+            }
+        }
+    }
+,
+"bilal":{
+    "ports": {
+        "clk": {
+            "type": "input",
+            "range": "None"
+        },
+        "reset": {
+            "type": "input",
+            "range": "[15:1]"
+        },
+        "en": {
+            "type": "input",
+            "range": "None"
+        },
+        "clr": {
+            "type": "input",
+            "range": "[16:0]"
+        },
+        "count": {
+            "type": "output",
+            "range": "[17:0]"
+        }
+    }
+}
+}

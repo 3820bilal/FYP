@@ -1,0 +1,26 @@
+{
+    "toplevelfile": {
+        "file_name": "file.sv",
+        "folder_name": "Baseboard"
+    },
+    "file": {
+        "ports": {
+            "clk": {
+                "type": "input",
+                "range": "None"
+            },
+            "reset": {
+                "type": "input",
+                "range": "None"
+            },
+            "new": {
+                "type": "input",
+                "range": "None"
+            },
+            "xyz": {
+                "type": "input",
+                "range": "None"
+            }
+        }
+    }
+}

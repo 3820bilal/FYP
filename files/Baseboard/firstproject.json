@@ -1,0 +1,18 @@
+{
+"toplevelfile":{
+    "file_name": "firstproject.sv",
+    "folder_name": "Baseboard"
+}
+,"firstproject":{
+    "ports": {
+        "clk": {
+            "type": "input",
+            "range": "None"
+        },
+        "reset": {
+            "type": "input",
+            "range": "None"
+        }
+    }
+}
+}

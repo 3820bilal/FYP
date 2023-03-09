@@ -34,7 +34,6 @@ def json_delete_port(filename,port_name):
     with open(f"{Baseboard_path}/{Json_Top_file}.json",'r') as f:
         data = json.load(f)
 
-    # Delete the "clk" port from the "ports" object within the "Baseboard" object
     if module_name in data and "ports" in data[module_name] and f"{port_name}" in data[module_name]["ports"]:
         del data[module_name]["ports"][port_name]
 
@@ -49,7 +48,7 @@ def delete_port(filename, port_name):
     prev_line = ""
     deleted = False  # flag to track if the port has been deleted
 
-    for line in fileinput.input(fileName, inplace=True):
+    for line in fileinput.input(filename, inplace=True):
         if port_name in line and not ',' in line:
             line = prev_line.rstrip(',\n') + "\n"
             new_lines[-1] = line
@@ -110,7 +109,7 @@ if __name__ == '__main__':
     parser.add_argument('-t', '--top_file', help='other top level file',type=str)
 
     arg = parser.parse_args()
-    top_file=args.top_file
+    top_file=arg.top_file
     Top_level_file = arg.file_name
 
     Json_Top_file=Top_level_file.replace(".sv",'')
