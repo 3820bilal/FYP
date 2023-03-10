@@ -12,7 +12,7 @@ def LAGO_USR_INFO(fname):
 		f.write(f"\nTOP_FILE={fname}") #--> write current toplevel file name
 		f.seek(0)
 		LAGO_DIR=f.readline().replace("LAGO_DIR=","")+"/files/";
-		# f.close()
+		f.close()
 		LAGO_DIR=LAGO_DIR.replace("\n","")
 ##############################################################################
 from colorama import Fore
