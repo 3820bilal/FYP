@@ -105,7 +105,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '-f', "--file_name", help="Name of file where port or instance has to be removed")
     parser.add_argument(
-        '-p', "--port", help="Name of file of port which needs to be removed")
+        '-p', "--port", help="Name of file from which port  needs to be removed")
 
     parser.add_argument(
         '-i', "--instance", help="Name of instances which needs to be removed")

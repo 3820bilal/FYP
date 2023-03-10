@@ -89,24 +89,25 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     parser.add_argument('-f','--file_name',type=str, help='name of file where instance or port need to be renamed')
-    parser.add_argument('-e','--earlier',type=str, help='name of file where instance or port need to be renamed')
-    parser.add_argument('-c','--current',type=str, help='name of file where instance or port need to be renamed')
+    parser.add_argument('-u','--update_name',type=str, help='name of file where instance or port need to be renamed')
 
     parser.add_argument('-p','--port',type=str, help='name of port need to be renamed')
     parser.add_argument('-i','--instance',type=str, help='name of instance need to be renamed')
 
     args = parser.parse_args()
     Top_level_file = args.file_name
-    erlier_name = args.earlier
-    current_name = args.current
+    current_name = args.update_name
     LAGO_USR_INFO()
     Json_Top_file=Top_level_file.replace(".sv",'')
     Baseboard_path = os.path.join(LAGO_DIR,'Baseboard')
 
 
     if args.port:
-        rename_port(Top_level_file,erlier_name,current_name)
-        update_port_name(erlier_name,current_name)
+        port = args.port
+        rename_port(Top_level_file,port,current_name)
+        update_port_name(port,current_name)
     if args.instance:
-        update_module_name(erlier_name,current_name)
-        rename_module(Top_level_file,erlier_name,current_name)
+        instance = args.instance
+        update_module_name(instance,current_name)
+        rename_module(Top_level_file,instance,current_name)
+    

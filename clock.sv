@@ -1,8 +1,6 @@
 module clock (
 input	logic		clk,
 input	logic		reset,
-input	logic		clk,
-input	logic		reset,
 input	logic		en,
 input	logic	[5:0]	count_max_hrs,
 input	logic		clr_sec,
@@ -31,7 +29,7 @@ up_counter Min
 (
 .clk 				(clk),
 .reset 				(reset),
-.en 				(en),
+.en 				(clr_sec),
 .count_max 				(count_max),
 .clr 				(clr_min),
 .count 				(count_min)
@@ -43,7 +41,7 @@ up_counter Hr
 (
 .clk 				(clk),
 .reset 				(reset),
-.en 				(en),
+.en 				(clr_min),
 .count_max 				(count_max_hrs),
 .clr 				(clr_hrs),
 .count 				(count_hrs)

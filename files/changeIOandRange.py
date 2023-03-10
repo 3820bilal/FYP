@@ -13,7 +13,7 @@ def LAGO_USR_INFO():
         Linux_file_path = os.path.expanduser("~/.LAGO_USR_INFO")
         with open(Linux_file_path, "r") as Shell_file:
             sh_file=Shell_file.readlines()
-            LAGO_DIR=sh_file[0].replace("LAGO_DIR=","")+"/files/";
+            LAGO_DIR=sh_file[0].replace("LAGO_DIR=","")+"/files/"
             if Top_level_file:
              if f"TOP_FILE={Top_level_file}\n" in sh_file:
                 pass
@@ -25,7 +25,7 @@ def LAGO_USR_INFO():
         LAGO_DIR=LAGO_DIR.replace("\n","")
         Top_level_file=Top_level_file.replace("TOP_FILE=",'')
 ##############################################################################
-CURRENT_DIR=os.getcwd();
+CURRENT_DIR=os.getcwd()
 def update_ranges(file_name, new_range, port_name):
     with open(file_name, "r") as f:
         lines = f.readlines()
@@ -81,6 +81,7 @@ def change_IO_status(file_name, new_status, port_name):
                           f"Port status of {port_name} changed from {port_type} to {new_status}." + Fore.RESET)
                     Success = True
                     return Success
+                    
         if not found:
             print(Fore.RED + f"Error: {port_name} not found in {file_name}." + Fore.RESET)
 
@@ -96,22 +97,22 @@ def change_IO_status_json(port_name, new_status):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Update file contents')
     parser.add_argument('-f','--file_name', help='Name of the file to update')
-    parser.add_argument('-a','--operation', choices=['update_range', 'update_range_json', 'change_IO_status', 'change_IO_status_json'])
+    parser.add_argument('-o','--operation', choices=['range', 'update_range_json', 'stat', 'change_IO_status_json'])
     parser.add_argument('-nr','--new_range', help='New range to update (for update_range and update_range_json operations)')
     parser.add_argument('-p','--port_name', help='Name of the port to update (for update_range, update_range_json, change_IO_status, and change_IO_status_json operations)')
     parser.add_argument('-ns','--new_status', choices=['input', 'output'], help='New status to update (for change_IO_status and change_IO_status_json operations)')
     args = parser.parse_args()
 
-    Top_level_file = arg.file_name
+    Top_level_file = args.file_name
     LAGO_USR_INFO()
     Baseboard_path = os.path.join(LAGO_DIR,'Baseboard')
     Json_Top_file=Top_level_file.replace(".sv",'')
 
-    if args.operation == 'update_range':
+    if args.operation == 'range':
         Success = update_ranges(Top_level_file, args.new_range, args.port_name)
         if Success:
             update_ranges_json(args.new_range, args.port_name)
-    elif args.operation == 'change_IO_status':
-        change_IO_status(Top_level_file, args.new_status, args.port_name)
+    if args.operation == 'stat':
+        Success = change_IO_status(Top_level_file, args.new_status, args.port_name)
         if Success:
             change_IO_status_json(args.port_name, args.new_status)
