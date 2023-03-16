@@ -26,7 +26,7 @@ def add_inputs_outputs(fileName,inputs,outputs,input_ranges,output_ranges,Basebo
                     print(Fore.RED + f"{inp} already exist in {fileName}" + Fore.RESET)
                     exit()
                 else:
-                    if inp_ranges == 'None' or inp_ranges == 'none':
+                    if inp_ranges == 'None':
                         inpu = f"\ninput\tlogic\t\t{(i.join(inp))},"
                         print(Fore.GREEN + f"{inp} is added in {fileName}" + Fore.RESET)
                         Body = Body + inpu
@@ -47,7 +47,7 @@ def add_inputs_outputs(fileName,inputs,outputs,input_ranges,output_ranges,Basebo
                     print(Fore.RED + f"{out} already exist in {fileName}" + Fore.RESET)
                     exit()
                 else:
-                    if opt_ranges == 'None' or opt_ranges == 'none':
+                    if opt_ranges == 'None':
                         outu = f"\noutput\tlogic\t\t{o.join(out)},"
                         print(Fore.GREEN + f"{out} is added in {fileName}" + Fore.RESET)
                         Body = Body + outu

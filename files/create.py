@@ -6,12 +6,12 @@ import colorama
 
 #################### LAGO ROOT address ######################################
 def LAGO_USR_INFO(fname):
-	global LAGO_DIR;
+	global LAGO_DIR
 	file_path = os.path.expanduser("~/.LAGO_USR_INFO")
 	with open(file_path, "a+") as f:
 		f.write(f"\nTOP_FILE={fname}") #--> write current toplevel file name
 		f.seek(0)
-		LAGO_DIR=f.readline().replace("LAGO_DIR=","")+"/files/";
+		LAGO_DIR=f.readline().replace("LAGO_DIR=","")+"/files/"
 		f.close()
 		LAGO_DIR=LAGO_DIR.replace("\n","")
 ##############################################################################
@@ -53,10 +53,10 @@ def set_instance_name(f_name, inputs, outputs, input_ranges, output_ranges):
 
 #########################################################
 def name():
-    global inputs, outputs, input_ranges,f_name, output_ranges;
+    global inputs, outputs, input_ranges,f_name, output_ranges
     with open(f_name, 'w+') as file:
         file.write(set_instance_name(f_name, inputs,outputs, input_ranges, output_ranges))
-        print(Fore.GREEN + f"Congrants! {f_name} is created." + Fore.RESET)
+        print(Fore.GREEN + f"{f_name} is created." + Fore.RESET)
 #########################################################
 def storing_data_in_Json(f_name, inputs, input_ranges, outputs, output_ranges):
     m_name = f_name.replace(".sv", "")
