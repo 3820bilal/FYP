@@ -1,71 +1,48 @@
 #!/usr/bin/python3
-import re
-import argparse
+import json
 from colorama import Fore
+success = False
+def adding_parameters(filename, param, value):
+    global success
+    if success is False:
+        exit()
+    with open (filename,'r') as topfile:
+        data=topfile.readlines()
+        if data[0].endswith("#(\n"):
+            existing_param = data[1].replace("\n",",\n")
+            existing_param = existing_param+f"\tparameter {param}  \t = {value}\n"
 
-
-def adding_parameters(filename, param, ranges):
-    # open the file and read its contents
-    with open(filename, 'r') as file:
-        content = file.read()
-        pattern = r'module\s+clock\s*#\(\s*([^)]*)\s*\)'
-        match = re.search(pattern, content, re.DOTALL)
-        if match:
-            existing_param = match.group(1)
-            existing_param = existing_param.rstrip()
-            if existing_param != '':
-                existing_param += ','
-            else:
-                existing_param += ' '
-            Body = ''
-            if param:
-                p = ''
-                for prm, rng in zip(param, ranges):
-                    if prm in existing_param:
-                        print(
-                            Fore.RED + f"{prm} already exists in {filename}" + Fore.RESET)
-                        exit()
-                    else:
-                        if rng == 'None':
-                            param_text = f'\n\tparameter\t{(p.join(prm))},'
-                        else:
-                            param_text = f'\n\tparameter\t{rng}\t{(p.join(prm))},'
-                        Body += param_text  # append the new parameter text to Body
-                print(Fore.GREEN + f"{prm} added to {filename}" + Fore.RESET)
-            Body = Body.rstrip(',')
-            new_text = f"module clock \n#(\n\t{existing_param}{Body}\n)"
-            new_content = content.replace(match.group(0), new_text)
-            with open(filename, 'w') as f:
-                f.write(new_content)
+            data.remove(data[1])
+            data.insert(1,existing_param)
+            print(Fore.BLUE + f"{param} added in {filename}" + Fore.RESET)
         else:
-            pattern_text = 'module clock\n#(\n)'
-            if param:
-                p = ''
-                Body = ''
-                for prm, rng in zip(param, ranges):
-                    if rng == 'None':
-                        param_text = f'\n\tparameter\t{(p.join(prm))},'
-                    else:
-                        param_text = f'\n\tparameter\t{rng}\t{(p.join(prm))},'
-                    Body += param_text  # append the new parameter text to Body
-                print(Fore.GREEN + f"{prm} added to {filename}" + Fore.RESET)
-                Body = Body.rstrip(',')
-                pattern_text = f"module clock\n#(\n\t{Body}\n)"
-                # pattern_text += Body
-            content = content.replace('module clock', pattern_text)
-            with open(filename, 'w') as file:
-                file.write(content)
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description='Add parameters to a Verilog module')
-    parser.add_argument('-f', '--filename', type=str,
-                        help='the name of the Verilog file to modify')
-    parser.add_argument('-pm', '--param', type=str, nargs='+',
-                        help='the name of the parameter(s) to add')
-    parser.add_argument('-pr', '--range', dest='ranges', type=str, nargs='+',
-                        default=['None'], help='the range(s) of the parameter(s) to add')
-    args = parser.parse_args()
-
-    adding_parameters(args.filename, args.param, args.ranges)
+            first_line = data[0].replace("(\n","#(\n")
+            data.remove(data[0])
+            data.insert(0,first_line)
+            data.insert(1,f"\tparameter {param}  \t = {value}\n)\n\n(\n")
+            print(Fore.BLUE + f"{param} added in {filename}" + Fore.RESET)
+        with open (filename,'w') as topfile:
+            topfile.writelines(data)
+            
+def parameter_json(filename,param,ranges,Baseboard_path):
+    global success
+    filename=filename.replace(".sv",".json")
+    with open (f"{Baseboard_path}/{filename}",'r') as j:
+        data=json.load(j)
+        try:
+            if param in data['parameter']:
+                print(Fore.RED + f"{param} already exists in {filename}" + Fore.RESET)
+                print(Fore.RED + f"Please change the parameter name" + Fore.RESET)
+                return
+            elif data.get('parameter'):
+                 data['parameter'][param]=ranges
+                 with open (f"{Baseboard_path}/{filename}",'w') as n:
+                    new = json.dumps(data,indent=4)
+                    n.write(new)
+                    success = True
+        except:      
+            data.update({"parameter":{param:ranges}})
+            with open (f"{Baseboard_path}/{filename}",'w') as n:
+                new = json.dumps(data,indent=4)
+                n.write(new)
+                success = True

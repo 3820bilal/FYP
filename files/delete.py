@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-import colorama
 from colorama import Fore
 import re
 import os
@@ -34,7 +33,7 @@ def json_delete_port(filename,port_name):
     with open(f"{Baseboard_path}/{Json_Top_file}.json",'r') as f:
         data = json.load(f)
 
-    # Delete the "clk" port from the "ports" object within the "Baseboard" object
+    
     if module_name in data and "ports" in data[module_name] and f"{port_name}" in data[module_name]["ports"]:
         del data[module_name]["ports"][port_name]
 
@@ -44,7 +43,6 @@ def json_delete_port(filename,port_name):
 
 
 def delete_port(filename, port_name):
-    # Remove the line containing the string and print the previous line
     new_lines = []
     prev_line = ""
     deleted = False  # flag to track if the port has been deleted
@@ -105,7 +103,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '-f', "--file_name", help="Name of file where port or instance has to be removed")
     parser.add_argument(
-        '-p', "--port", help="Name of file from which port  needs to be removed")
+        '-p', "--port", help="Name of file of port which needs to be removed")
 
     parser.add_argument(
         '-i', "--instance", help="Name of instances which needs to be removed")

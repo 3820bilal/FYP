@@ -35,20 +35,39 @@ else
 	echo "list_lago was not installed";
 fi
 
-if [[ -n $(/bin/find config) ]]
+if [[ -n $(/bin/find add) ]]
 then
 	echo "------------------------------";
-	sudo /bin/rm config
-	echo "----config uninstalled----";
+	sudo /bin/rm add
+	echo "----add uninstalled--------";
 else
-	echo "config was not installed";
+	echo "add was not installed";
 fi
+
+if [[ -n $(/bin/find rename) ]]
+then
+	echo "------------------------------";
+	sudo /bin/rm rename
+	echo "----rename uninstalled--------";
+else
+	echo "rename was not installed";
+fi
+
+if [[ -n $(/bin/find delete) ]]
+then
+	echo "------------------------------";
+	sudo /bin/rm delete
+	echo "----delete uninstalled--------";
+else
+	echo "delete was not installed";
+fi
+
 cd ~
 if [[ -n $(find .LAGO_USR_INFO) ]]
 then
 	echo "------------------------------";
 	sudo /bin/rm .LAGO_USR_INFO
-	echo "-----create uninstalled-------";
+	echo "---LAGO_USR_INFO uninstalled--";
 else
 	echo ".LAGO_USR_INFO not found!";
 fi
