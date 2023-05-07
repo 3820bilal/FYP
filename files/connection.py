@@ -86,8 +86,9 @@ def check_range_equality(found,Top_level_file,inst, input_port, output_port,data
                 found = True
             else:
                 print(
-                    Fore.RED + f'Error: Range of {input_port} is {range1} and range of {output_port} is {range2} which is not equal!!' + Fore.RESET)
-                exit()
+                    Fore.LIGHTYELLOW_EX + f'Warning: Unequal Ranges! Range of {input_port} is {range1} and range of {output_port} is {range2}.' + Fore.RESET)
+                found = True
+                # exit()
         return found
     except KeyError:
         for  input_port, output_port in zip(input_port, output_port):

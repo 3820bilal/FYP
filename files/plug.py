@@ -82,8 +82,9 @@ def extract_data(file,instance):                   # it will open library file
             print(
                 Fore.GREEN + f'instance {instance} is successfully pluged in {Top_level_file}.' + Fore.RESET)
 
-def io_outside(ios):
+def io_outside(ios,fileName=Top_level_file):
     global Top_level_file, CURRENT_DIR
+    print(Top_level_file)
     m_name = f"{Top_level_file}".replace(".sv", "")
     with open(f"{CURRENT_DIR}/{Top_level_file}", 'r') as f:
         file_contents = f.read()
@@ -95,18 +96,29 @@ def io_outside(ios):
         file_contents = re.sub(pattern, new_data, file_contents)
         with open(f"{CURRENT_DIR}/{Top_level_file}", 'w') as f:
             f.write(file_contents)
-
-def generating_mux(input_signals, output_signal, sl):
+def generating_mux(input_signals, width,output_signal, sl):
     leng = len(input_signals)
     rounding_threshold = 0.1
     val = math.log2(leng)
+    lis = []
+    with open(f"{CURRENT_DIR}/{Top_level_file}", "r") as f:
+        for word in f:
+            words = word.split()
+            words = [w.rstrip(',;') for w in words]
+            lis.extend(words)
+
     if leng == 2:
-        selct_lin = f'reg\t\t{sl};'
-        io_outside(selct_lin)
+        if f"{sl}" not in lis:
+            io_outside(f'reg\t\t\t{sl};')
+        if f"{output_signal}" not in lis:
+            io_outside(f"reg\t{width}\t{output_signal};")
+
         code = "always@*\n"
         code += f"\tcase({sl})\n"
         for i, signal in enumerate(input_signals):
             code += f"\t1'd{i}: {str(output_signal)} = {signal};\n"
+            if f"{signal}" not in lis:
+                io_outside(f"reg\t{width}\t{signal};")
         code += "\tendcase\n"
         mux_code = code
     else:
@@ -115,21 +127,20 @@ def generating_mux(input_signals, output_signal, sl):
         else:
             rounded_value = math.floor(val)
 
-        selct_lin = f'reg [{rounded_value-1}:0] {sl};'
-        io_outside(selct_lin)
+        if f"{output_signal}" not in lis:
+            io_outside(f"reg\t{width}\t{output_signal};")
+        if f"{sl}" not in lis:
+            io_outside(f'reg\t[{rounded_value-1}:0]\t{sl};')
 
-        for i_sig in input_signals:
-            ranges = f"[{rounded_value-1}:0]"
-            signlas = f'reg {ranges} {i_sig};'
-            io_outside(signlas)
+        code = "always@*\n"
+        code += f"\tcase({sl})\n"
+        for i, signal in enumerate(input_signals):
+            code += f"\t{rounded_value}'d{i}: {str(output_signal)} = {signal};\n"
+            if f"{signal}" not in lis:
+                io_outside(f"reg\t{width}\t{signal};")
 
-            code = "always@*\n"
-            code += f"\tcase({sl})\n"
-            for i, signal in enumerate(input_signals):
-                code += f"\t{rounded_value}'d{i}: {str(output_signal)} = {signal};\n"
-            code += "\tendcase\n"
-            mux_code = code
-
+        code += "\tendcase\n"
+        mux_code = code
     # open top file in append mode
     with open(f"{CURRENT_DIR}/{Top_level_file}", "r") as f:
         content = f.read()
@@ -142,21 +153,31 @@ def generating_mux(input_signals, output_signal, sl):
     return mux_code
 
 def generate_register(inp_sig=None,inp_ranges=None, out_sig=None ,out_ranges=None, enable_sig=None):
+    lis = []
+    with open(f"{CURRENT_DIR}/{Top_level_file}", "r") as f:
+        for word in f:
+            words = word.split()
+            words = [w.rstrip(',;') for w in words]
+            lis.extend(words)
     if enable_sig is None:
         if inp_sig:
             if inp_ranges is None:
-                inp_declaration = f'reg {inp_sig};'
-                io_outside(inp_declaration)
+                if f"{inp_sig}" not in lis:
+                    inp_declaration = f'reg {inp_sig};'
+                    io_outside(inp_declaration)
             else:
-                inp_declaration = f'reg {inp_ranges} {inp_sig};'
-                io_outside(inp_declaration)
+                if f"{inp_sig}" not in lis:
+                    inp_declaration = f'reg {inp_ranges} {inp_sig};'
+                    io_outside(inp_declaration)
         if out_sig:
             if out_ranges is None:
-                out_declaration = f'reg {out_sig};'
-                io_outside(out_declaration)
+                if f"{inp_sig}" not in lis:
+                    out_declaration = f'reg {out_sig};'
+                    io_outside(out_declaration)
             else:
-                out_declaration = f'reg {out_ranges} {out_sig};'
-                io_outside(out_declaration)
+                if f"{inp_sig}" not in lis:
+                    out_declaration = f'reg {out_ranges} {out_sig};'
+                    io_outside(out_declaration)
                     
         code = f"always @(posedge clk)\nbegin\n\tif(reset)\n\tbegin\n"
         code += f"\t\t{out_sig} <= 0;\n"
@@ -164,22 +185,27 @@ def generate_register(inp_sig=None,inp_ranges=None, out_sig=None ,out_ranges=Non
         code += f"\t\t{out_sig} <= {inp_sig};\n"
         code += f"\tend\nend\n"
     else:
-        reg_sig = f'reg {enable_sig};'
-        io_outside(reg_sig)
+        if f"{inp_sig}" not in lis:
+            reg_sig = f'reg {enable_sig};'
+            io_outside(reg_sig)
         if inp_sig:
-            if inp_ranges is None:
-                inp_declaration = f'reg {inp_sig};'
-                io_outside(inp_declaration)
+            if f"{inp_sig}" not in lis:
+                if inp_ranges is None:
+                    inp_declaration = f'reg {inp_sig};'
+                    io_outside(inp_declaration)
             else:
-                inp_declaration = f'reg {inp_ranges} {inp_sig};'
-                io_outside(inp_declaration)
+                if f"{inp_sig}" not in lis:
+                    inp_declaration = f'reg {inp_ranges} {inp_sig};'
+                    io_outside(inp_declaration)
         if out_sig:
-            if out_ranges is None:
-                out_declaration = f'reg {out_sig};'
-                io_outside(out_declaration)
+            if f"{inp_sig}" not in lis:
+                if out_ranges is None:
+                    out_declaration = f'reg {out_sig};'
+                    io_outside(out_declaration)
             else:
-                out_declaration = f'reg {out_ranges} {out_sig};'
-                io_outside(out_declaration)
+                if f"{inp_sig}" not in lis:
+                    out_declaration = f'reg {out_ranges} {out_sig};'
+                    io_outside(out_declaration)
                 
         code = f"always @(posedge clk)\nbegin\n"
         code += f"\tif(reset)\n\tbegin\n"
@@ -241,6 +267,7 @@ def create_instance(file_name,inst_name):
         instance = file_name.replace(".sv", '')
     try:
         data = Extracting_data.get_ranges_from_file(library_file)
+        # print(data)
         json_file = Top_level_file.replace(".sv", '.json')
         new_inst={instance:data}
         with open (f"{Baseboard_path}/{json_file}",'r') as j:
@@ -264,7 +291,7 @@ if __name__ == '__main__':
     
     parser.add_argument('-n', '--instance_name', help='Name of instance')
    
-    parser.add_argument('-i', '--inputs',help='Input port name')
+    parser.add_argument('-i', '--inputs',help='Input port name',nargs='+')
     parser.add_argument('-ir', '--input_ranges',help='Input port range')
     parser.add_argument('-o', '--outputs',help='Output port name')
     parser.add_argument('-or', '--output_ranges',help='Output port range')
@@ -273,6 +300,7 @@ if __name__ == '__main__':
     
     parser.add_argument('-re', '--reset_signal', type=str, help='Select line')
     parser.add_argument('-en', '--enable_signal', type=str, help='Select line')
+    parser.add_argument('-wd', '--width', type=str, help='Select line')
     
     args = parser.parse_args()
     file = args.instance
@@ -281,14 +309,14 @@ if __name__ == '__main__':
     LAGO_USR_INFO()  # ---->
     Baseboard_path = os.path.join(LAGO_DIR, 'Baseboard')
     library = os.path.join(LAGO_DIR, 'library')
-    library_file = os.path.join(library, file)  # --->
     
     if args.instance:
+        library_file = os.path.join(library, file)  # --->
         create_instance(args.instance,args.instance_name)
         exit()
     if args.mux:
         if args.inputs and args.outputs and args.select_line:
-            generating_mux(args.inputs, args.outputs, args.select_line)
+            generating_mux(args.inputs,args.width,args.outputs, args.select_line)
             exit()
         else:
             print("Please provide all the required arguments\n")
@@ -297,7 +325,7 @@ if __name__ == '__main__':
         
     if args.register:
         if args.inputs and args.outputs:
-            generate_register(args.inputs, args.outputs, args.enable_signal, args.input_ranges, args.output_ranges)   # why en is taking as input
+            generate_register(args.inputs, args.input_ranges,args.outputs, args.output_ranges,args.enable_signal )   # why en is taking as input
             exit()
         else:
             print("Please provide all the required arguments\n")

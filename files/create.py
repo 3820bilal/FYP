@@ -37,18 +37,18 @@ def set_instance_name(f_name, inputs, outputs, input_ranges, output_ranges):
             o = ""
             for out, opt_ranges in zip(outputs, output_ranges):
                 if opt_ranges == 'None' or opt_ranges == 'none':
-                    outu = f"\noutput\twire\t\t{o.join(out)},"
+                    outu = f"\noutput\treg\t\t{o.join(out)},"
                     Body = Body + outu
                 else:
-                    outu = f"\noutput\twire\t{opt_ranges}\t{o.join(out)},"
+                    outu = f"\noutput\treg\t{opt_ranges}\t{o.join(out)},"
                     Body = Body + outu
         Body = Body.rstrip(",")
         end = "\n\n);\nendmodule"
         Body = Body + end
-        print(Body)
+        # print(Body)
     else:
         Body = f'''module {m_name} (\ninput\tlogic\t\tclk,\ninput\tlogic\t\treset\n\n);\nendmodule'''
-        print(Body)
+        # print(Body)
     return Body
 
 #########################################################

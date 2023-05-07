@@ -7,6 +7,7 @@ from colorama import Fore
 import addparam
 import changeIOandRange
 import add_reg_wire
+import parametrizing
 LAGO_DIR = ''
 Top_level_file = ''
 CURRENT_DIR = os.getcwd()
@@ -41,7 +42,6 @@ def add_inputs_outputs(fileName, inputs, input_ranges, outputs, output_ranges):
     pattern2 = rf".*?(module\s+{instance_name}\s*((?:[\s\S]*?);))"
     match1 = re.search(pattern1, content, re.DOTALL)
     match2 = re.search(pattern2, content, re.DOTALL)
-
     if match1:
         existing_ports1 = match1.group(1)
         existing_ports = match1.group(2)
@@ -55,48 +55,39 @@ def add_inputs_outputs(fileName, inputs, input_ranges, outputs, output_ranges):
             i = ''
             for inp, inp_ranges in zip(inputs, input_ranges):
                 if inp in existing_ports:
-                    print(
-                        Fore.RED + f"{inp} already exists in {fileName}" + Fore.RESET)
+                    print(Fore.RED + f"{inp} already exists in {fileName}" + Fore.RESET)
                     exit()
                 else:
-                    if inp_ranges == 'None':
+                    if inp_ranges == 'None' or inp_ranges == 'none':
                         inpu = f"\ninput\tlogic\t\t{(i.join(inp))},"
-                        print(Fore.GREEN +
-                              f"{inp} is added in {fileName}" + Fore.RESET)
+                        print(Fore.GREEN + f"{inp} is added in {fileName}" + Fore.RESET)
                         body = body + inpu
                     else:
                         inpu = f"\ninput\tlogic\t{inp_ranges}\t{(i.join(inp))},"
-                        print(Fore.GREEN +
-                              f"{inp} is added in {fileName}" + Fore.RESET)
+                        print(Fore.GREEN + f"{inp} is added in {fileName}" + Fore.RESET)
                         body = body + inpu
-
         if outputs:
             o = ''
             for out, opt_ranges in zip(outputs, output_ranges):
                 if out in existing_ports:
-                    print(
-                        Fore.RED + f"{out} already exists in {fileName}" + Fore.RESET)
+                    print(Fore.RED + f"{out} already exists in {fileName}" + Fore.RESET)
                     exit()
                 else:
-                    if opt_ranges == 'None':
+                    if opt_ranges == 'None' or opt_ranges == 'none':
                         outu = f"\noutput\tlogic\t\t{o.join(out)},"
-                        print(Fore.GREEN +
-                              f"{out} is added in {fileName}" + Fore.RESET)
+                        print(Fore.GREEN + f"{out} is added in {fileName}" + Fore.RESET)
                         body = body + outu
                     else:
                         outu = f"\noutput\tlogic\t{opt_ranges}\t{o.join(out)},"
-                        print(Fore.GREEN +
-                              f"{out} is added in {fileName}" + Fore.RESET)
+                        print(Fore.GREEN + f"{out} is added in {fileName}" + Fore.RESET)
                         body = body + outu
-
         body = body.rstrip(",")
         new_instance_text = f'module {instance_name}\n#(\n\t{existing_ports1})\n{existing_ports}{body}\n);'
         new_content = content.replace(match1.group(0), new_instance_text)
         with open(fileName, "w") as f:
             f.write(new_content)
     elif match2:
-        existing_ports = re.search(
-            rf'module\s+{instance_name}\s*\((.*?)\);', match2.group(0), re.DOTALL)
+        existing_ports = re.search(rf'module\s+{instance_name}\s*\((.*?)\);', match2.group(0), re.DOTALL)
         existing_ports = existing_ports.group(1)
         existing_ports = existing_ports.rstrip()
         if existing_ports != '':
@@ -108,193 +99,165 @@ def add_inputs_outputs(fileName, inputs, input_ranges, outputs, output_ranges):
             i = ''
             for inp, inp_ranges in zip(inputs, input_ranges):
                 if inp in existing_ports:
-                    print(
-                        Fore.RED + f"{inp} already exists in {fileName}" + Fore.RESET)
+                    print(Fore.RED + f"{inp} already exists in {fileName}" + Fore.RESET)
                     exit()
                 else:
                     if inp_ranges == 'None' or inp_ranges == 'none':
                         inpu = f"\ninput\tlogic\t\t{(i.join(inp))},"
-                        print(Fore.GREEN +
-                              f"{inp} is added in {fileName}" + Fore.RESET)
+                        print(Fore.GREEN + f"{inp} is added in {fileName}" + Fore.RESET)
                         body = body + inpu
                     else:
                         inpu = f"\ninput\tlogic\t{inp_ranges}\t{(i.join(inp))},"
-                        print(Fore.GREEN +
-                              f"{inp} is added in {fileName}" + Fore.RESET)
-                        body = body + inpu
-
+                        print(Fore.GREEN + f"{inp} is added in {fileName}" + Fore.RESET)
+                        body = body + inpu     
         if outputs:
             o = ''
             for out, opt_ranges in zip(outputs, output_ranges):
                 if out in existing_ports:
-                    print(
-                        Fore.RED + f"{out} already exists in {fileName}" + Fore.RESET)
+                    print(Fore.RED + f"{out} already exists in {fileName}" + Fore.RESET)
                     exit()
                 else:
                     if opt_ranges == 'None' or opt_ranges == 'none':
                         outu = f"\noutput\tlogic\t\t{o.join(out)},"
-                        print(Fore.GREEN +
-                              f"{out} is added in {fileName}" + Fore.RESET)
+                        print(Fore.GREEN + f"{out} is added in {fileName}" + Fore.RESET)
                         body = body + outu
                     else:
                         outu = f"\noutput\tlogic\t{opt_ranges}\t{o.join(out)},"
-                        print(Fore.GREEN +
-                              f"{out} is added in {fileName}" + Fore.RESET)
-                        body = body + outu
-
+                        print(Fore.GREEN + f"{out} is added in {fileName}" + Fore.RESET)
+                        body = body + outu  
         body = body.rstrip(",")
         new_instance_text = f'({existing_ports}{body}\n);'
         new_content = content.replace(match2.group(2), new_instance_text)
         with open(fileName, "w") as f:
             f.write(new_content)
-
-
-def add_inputs_outputs_JSON(fileName, inputs, input_ranges, ouputs, output_ranges, Baseboard_path):
-    json_file = fileName.replace('.sv', '.json')
+def add_inputs_outputs_JSON(fileName,inputs, input_ranges, ouputs,output_ranges,Baseboard_path):
+    json_file=fileName.replace('.sv','.json')
     with open(f"{Baseboard_path}/{json_file}") as f:
         data = json.load(f)
         if inputs:
             for inputs, input_ranges in zip(inputs, input_ranges):
                 if inputs in data['ports']:
-                    print(
-                        Fore.RED + f"{inputs} already exists in {fileName}" + Fore.RESET)
+                    print(Fore.RED + f"{inputs} already exists in {fileName}" + Fore.RESET)
                 else:
-                    s = {'type': 'input', 'range': input_ranges}
-                    data['ports'].update({inputs: s})
-                    print(Fore.GREEN +
-                          f"{inputs} is added in {fileName}" + Fore.RESET)
+                    s={'type':'input','range':input_ranges} 
+                    data['ports'].update({inputs:s})
+                    print(Fore.GREEN + f"{inputs} is added in {fileName}" + Fore.RESET)
         if ouputs:
-            for output, range in zip(ouputs, output_ranges):
+            for output,range in zip(ouputs,output_ranges):
                 if output in data['ports']:
-                    print(
-                        Fore.RED + f"{output} already exists in {fileName}" + Fore.RESET)
+                    print(Fore.RED + f"{output} already exists in {fileName}" + Fore.RESET)
                 else:
-                    data['ports'][output][{'type': 'output', 'range': range}]
-                    print(Fore.GREEN +
-                          f"{output} is added in {fileName}" + Fore.RESET)
-    with open(f"{Baseboard_path}/{json_file}", 'w') as f:
+                    data['ports'][output][{'type':'output','range':range}]
+                    print(Fore.GREEN + f"{output} is added in {fileName}" + Fore.RESET)
+    with open(f"{Baseboard_path}/{json_file}" , 'w') as f:
         json.dump(data, f, indent=4)
-
-
+   
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-p', "--port", action='store_true')
-    parser.add_argument('-c', "--change", type=str,
-                        help='change IO status or range')
-    parser.add_argument('-P', '--parameter', nargs='+',
+    parser = argparse.ArgumentParser()       
+    parser.add_argument('-p',"--port",action='store_true')
+    parser.add_argument('-c',"--change",type=str,help='change IO status or range')
+    parser.add_argument('-P', '--parameter',nargs='+',help='the name of the parameter(s) to add')
+    parser.add_argument('-v', '--value',nargs='+', help='the value of the parameter(s) to add')
+    parser.add_argument('-r','--reg',help='reg',nargs='+', type=str)
+    parser.add_argument('-w','--wire',help='wire', nargs='+',type=str)
+    parser.add_argument('-rn','--range',help='range',nargs='+',type=str)
+     
+    
+    parser.add_argument('-nr','--new_range', help='New range of input or output port')
+    parser.add_argument('-pr','--port_name', help='Name of the port to update (for update_range, update_range_json, change_IO_status, and change_IO_status_json operations)')
+    parser.add_argument('-ns','--new_status', choices=['input', 'output'], help='New status to update (for change_IO_status and change_IO_status_json operations)')
+
+    
+    parser.add_argument('-t,','--topfile',help='Top level file name', type=str)
+    
+    parser.add_argument('-i', '--inputs',nargs='+',help='Input port name')
+    parser.add_argument('-ir', '--input_ranges',nargs='+',help='Input port range',default=['None'])
+    parser.add_argument('-o', '--outputs',nargs='+',help='Output port name')
+    parser.add_argument('-or', '--output_ranges',nargs='+',help='Output port range',default=['None'])
+    parser.add_argument('-l', '--local_parm',nargs='+',help='adding local parameters')
+    parser.add_argument('-n', '--instance', type=str,
+                        help='the name of instance in which parameter need to be override')
+    parser.add_argument('-nw', '--new_width', type=str, nargs='+',
                         help='the name of the parameter(s) to add')
-    parser.add_argument('-v', '--value', nargs='+',
-                        help='the value of the parameter(s) to add')
-    parser.add_argument('-r', '--reg', help='reg', nargs='+', type=str)
-    parser.add_argument('-w', '--wire', help='wire', nargs='+', type=str)
-    parser.add_argument('-rn', '--range', help='range', nargs='+', type=str)
-
-    parser.add_argument('-nr', '--new_range',
-                        help='New range of input or output port')
-    parser.add_argument(
-        '-pr', '--port_name', help='Name of the port to update (for update_range, change_IO_statuss)')
-    parser.add_argument('-ns', '--new_status', choices=[
-                        'input', 'output'], help='New status to update (from input to output and vice versa)')
-
-    parser.add_argument('-t,', '--topfile',
-                        help='Top level file name', type=str)
-
-    parser.add_argument('-i', '--inputs', nargs='+', help='Input port name')
-    parser.add_argument('-ir', '--input_ranges', nargs='+',
-                        help='Input port range', default=['None'])
-    parser.add_argument('-o', '--outputs', nargs='+', help='Output port name')
-    parser.add_argument('-or', '--output_ranges', nargs='+',
-                        help='Output port range', default=['None'])
-    args = parser.parse_args()
-
-    Top_level_file = args.topfile
-
+    parser.add_argument('-ow', '--old_width', type=str, nargs='+',
+                        help='the name of the parameter(s) to add')
+    args=parser.parse_args()
+    
+    Top_level_file = args.topfile  
+    
     LAGO_USR_INFO()
     Baseboard_path = os.path.join(LAGO_DIR, 'Baseboard')
-
+    if args.new_width:
+        parametrizing.ovride_prms(Top_level_file,args.old_width,args.new_width,args.instance)
+        exit()
+    if args.local_parm:   
+        parametrizing.local_param(Top_level_file,args.local_parm,args.value,args.instance)
+        exit()
     if args.reg:
         if args.range:
-            for args.reg, args.range in zip(args.reg, args.range):
-                add_reg_wire.add_reg_to_json(
-                    Top_level_file, args.reg, args.range, Baseboard_path)
-                add_reg_wire.add_reg(Top_level_file, args.reg, args.range)
+            for args.reg,args.range in zip(args.reg,args.range):
+                add_reg_wire.add_reg_to_json(Top_level_file,args.reg,args.range,Baseboard_path)
+                add_reg_wire.add_reg(Top_level_file,args.reg,args.range)
             exit()
         else:
-            range = ' '
+            range=' '
             for args.reg in args.reg:
-                add_reg_wire.add_reg_to_json(
-                    Top_level_file, args.reg, range, Baseboard_path)
-                add_reg_wire.add_reg(Top_level_file, args.reg, range)
+                add_reg_wire.add_reg_to_json(Top_level_file,args.reg,range,Baseboard_path)
+                add_reg_wire.add_reg(Top_level_file,args.reg,range)
             exit()
-
     if args.wire:
         if args.range:
-            for args.wire, args.range in zip(args.wire, args.range):
-                add_reg_wire.add_wire_to_json(
-                    Top_level_file, args.wire, args.range, Baseboard_path)
-                add_reg_wire.add_wire(Top_level_file, args.wire, args.range)
+            for args.wire,args.range in zip(args.wire,args.range):
+                add_reg_wire.add_wire_to_json(Top_level_file,args.wire,args.range,Baseboard_path)
+                add_reg_wire.add_wire(Top_level_file,args.wire,args.range)
             exit()
         else:
-            range = ' '
+            range=' '
             for args.wire in args.wire:
-                add_reg_wire.add_wire_to_json(
-                    Top_level_file, args.wire, range, Baseboard_path)
-                add_reg_wire.add_wire(Top_level_file, args.wire, range)
+                add_reg_wire.add_wire_to_json(Top_level_file,args.wire,range,Baseboard_path)
+                add_reg_wire.add_wire(Top_level_file,args.wire,range)
             exit()
     if args.port:
         if args.inputs or args.outputs:
-            for args.inputs, args.input_ranges, args.outputs, args.output_ranges in zip(args.inputs, args.input_ranges, args.outputs, args.output_ranges):
-                add_inputs_outputs_JSON(
-                    Top_level_file, args.inputs, args.input_ranges, args.outputs, args.output_ranges, Baseboard_path)
-                add_inputs_outputs(
-                    Top_level_file, args.inputs, args.input_ranges, args.outputs, args.output_ranges)
+            # for args.inputs,args.input_ranges,args.outputs,args.output_ranges in zip(args.inputs,args.input_ranges,args.outputs,args.output_ranges):
+            add_inputs_outputs_JSON(Top_level_file,args.inputs,args.input_ranges,args.outputs,args.output_ranges,Baseboard_path)
+            add_inputs_outputs(Top_level_file,args.inputs,args.input_ranges,args.outputs,args.output_ranges)
             exit()
         else:
             print("Please provide input or output port name")
-            print(
-                "Example:add -p <port> -i <inputs> 'clk' -o <outputs> 'rst' -t <topfile> 'top.sv")
+            print("Example:add -p <port> -i <inputs> 'clk' -o <outputs> 'rst' -t <topfile> 'top.sv")
             exit()
     if args.parameter:
         if args.value:
-            for args.parameter, args.value in zip(args.parameter, args.value):
-                addparam.parameter_json(
-                    Top_level_file, args.parameter, args.value, Baseboard_path)
-                addparam.adding_parameters(
-                    Top_level_file, args.parameter, args.value)
-            exit()
+            for args.parameter,args.value in zip(args.parameter,args.value):
+                addparam.parameter_json(Top_level_file,args.parameter,args.value,Baseboard_path)
+                addparam.adding_parameters(Top_level_file,args.parameter,args.value)
+                exit()
         else:
             print("Please provide value for parameter(s) to add")
-            print(
-                "Example:add -P <parameter> 'WIDTH' -v <value> '32' -t <topfile> 'top.sv")
+            print("Example:add -P <parameter> 'WIDTH' -v <value> '32' -t <topfile> 'top.sv")
             exit()
-
+            
     if args.change:
-        if args.change == 'range':
+        if args.change=='range':
             if args.port_name and args.new_range:
-                changeIOandRange.update_ranges(
-                    Top_level_file, args.port_name, args.new_range)
-                changeIOandRange.update_ranges_json(
-                    Top_level_file, args.port_name, args.new_range, Baseboard_path)
+                changeIOandRange.update_ranges(Top_level_file,args.port_name,args.new_range)
+                changeIOandRange.update_ranges_json(Top_level_file,args.port_name,args.new_range,Baseboard_path)
             else:
                 print("Please provide port name and new range")
-                print(
-                    "Example:add -c <change> 'range' -pr <port_name> 'clk' -nr <new_range> '32' -t <topfile> 'top.sv")
+                print("Example:add -c <change> 'range' -pr <port_name> 'clk' -nr <new_range> '32' -t <topfile> 'top.sv")
                 exit()
-        elif args.change == 'port':
-            if args.port_name and args.new_status:
-                changeIOandRange.change_IO_status(
-                    Top_level_file, args.port_name, args.new_status)
-                changeIOandRange.change_IO_status_json(
-                    Top_level_file, args.port_name, args.new_status, Baseboard_path)
+        elif args.change=='port':
+            if args.port_name and args.new_status: 
+                changeIOandRange.change_IO_status(Top_level_file,args.port_name,args.new_status)
+                changeIOandRange.change_IO_status_json(Top_level_file,args.port_name,args.new_status,Baseboard_path)
             else:
                 print("Please provide port name and new status")
-                print(
-                    "Example:add -c <change> 'port' -pr <port_name> 'clk' -ns <new_status> 'input' -t <topfile> 'top.sv")
+                print("Example:add -c <change> 'port' -pr <port_name> 'clk' -ns <new_status> 'input' -t <topfile> 'top.sv")
                 exit()
         else:
             print("Please provide valid change option")
-            print(
-                "Example:add -c <change> 'range' -p <port_name> 'clk' -nr <new_range> '32' -t <topfile> 'top.sv")
+            print("Example:add -c <change> 'range' -p <port_name> 'clk' -nr <new_range> '32' -t <topfile> 'top.sv")
             print("Example:add -c <change> 'port' -p <port_name> 'clk' -ns <new_status> 'input' -t <topfile> 'top.sv")
             exit()
     else:
