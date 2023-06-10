@@ -11,47 +11,40 @@
         }
     },
     "parameter": {
-        "WIDTH": "9"
+        "WIDTH": "9",
+        "RAM_WIDTH": "32",
+        "RAM_ADDR_BITS": "9",
+        "PROG_FILE": "\"program.hex\"",
+        "PROG_START_ADDR": "0",
+        "PROG_END_ADDR": "8",
+        "DATA_FILE": "\"data_file.txt\"",
+        "DATA_START_ADDR": "0",
+        "DATA_END_ADDR": "5",
+        "datamem_addr_instr": "instr[8:0]",
+        "wr_addr_instr": "instr[26:22]",
+        "instr_addr1": "instr[21:17]",
+        "instr_addr2": "instr[16:12]",
+        "opcode_2bit": "opcode[1:0]",
+        "single_bit1": "1'b1",
+        "single_bit0": "1'b0",
+        "zero": "0",
+        "LW": "'d4",
+        "SW": "'d5"
     },
-    "instr": {
-        "range": " ",
-        "type": "wire"
+    "reg": {
+        "opcode": "[4:0]"
     },
-    "prog_cnt": {
-        "range": " ",
-        "type": "wire"
-    },
-    "op1": {
-        "range": " ",
-        "type": "wire"
-    },
-    "op2": {
-        "range": " ",
-        "type": "wire"
-    },
-    "ctl1": {
-        "range": " ",
-        "type": "wire"
-    },
-    "ctl3": {
-        "range": " ",
-        "type": "wire"
-    },
-    "ctl2": {
-        "range": " ",
-        "type": "wire"
-    },
-    "reg_data_in": {
-        "range": " ",
-        "type": "wire"
-    },
-    "alu_out": {
-        "range": " ",
-        "type": "wire"
-    },
-    "dram_data_out": {
-        "range": " ",
-        "type": "wire"
+    "wire": {
+        "instr": "[31:0]",
+        "reg_data_in": "[31:0]",
+        "alu_out": "[31:0]",
+        "dram_data_out": "[31:0]",
+        "op2": "[31:0]",
+        "op1": "[31:0]",
+        "prog_cnt": "[8:0]",
+        "ctl3": "None",
+        "ctl2": "None",
+        "ctl1": "None"
     },
     "up_counter_inst": {
         "ports": {
@@ -63,21 +56,9 @@
                 "type": "input",
                 "range": "None"
             },
-            "en": {
-                "type": "input",
-                "range": "None"
-            },
-            "count_max": {
-                "type": "input",
-                "range": "[5:0]"
-            },
-            "clr": {
-                "type": "output",
-                "range": "None"
-            },
             "count": {
                 "type": "output",
-                "range": "[5:0]"
+                "range": "[8:0]"
             }
         }
     },

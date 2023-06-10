@@ -3,60 +3,34 @@ import json
 from colorama import Fore
 import re
 success = False
-
-# def adding_parameters(filename,param, width):
-#     # global success
-#     # if success is False:
-#     #     exit()
-#     m_name = str(filename).replace(".sv","")
-#     with open(filename, 'r') as file:
-#         content = file.read()
-#         pattern = rf'module\s+{m_name}\s*#\(\s*([^)]*)\s*\)'
-#         match = re.search(pattern, content, re.DOTALL)
-#         if match:
-#             existing_param = match.group(1).rstrip()
-#             existing_param += "," if existing_param else ""
-#             Body = "".join([f'\n\tparameter\t{prm}\t=\t{rng}'for prm, rng in zip(param, width) if prm not in existing_param])
-#             if Body:
-#                 print(Fore.GREEN + f"{param} added to {filename}" + Fore.RESET)
-#             else:
-#                 print(
-#                     Fore.RED + f"{param} already exists in {filename}" + Fore.RESET)
-#                 exit()
-#             new_text = f"module {m_name}\n#(\n\t{existing_param}{Body.rstrip(',')}\n)"
-#             content = content.replace(match.group(0), new_text)
-#         else:
-#             Body = "".join([f'\n\tparameter\t{prm}\t=\t{rng},' for prm, rng in zip(param, width)])
-#             # Body = "".join([f'\n\tparameter\t{prm}\t=\t{("".join(rng))},' for prm, rng in zip(param, width)])
-#             if Body:
-#                 print(Fore.GREEN + f"{param} added to {filename}" + Fore.RESET)
-#                 pattern_text = f"{m_name}\n#(\n\t{Body.rstrip(',')}\n)"
-#                 content = content.replace(f'{m_name}', pattern_text)
-#         with open(filename, 'w') as f:
-#             f.write(content)
-
-
 def adding_parameters(filename, param, value):
+    inst_name = filename.replace(".sv","")
     global success
     if success is False:
         exit()
-    with open (filename,'r') as topfile:
-        data=topfile.readlines()
-        if data[0].endswith("#(\n"):
-            existing_param = data[1].replace("\n",",\n")
-            existing_param = existing_param+f"\tparameter {param}  \t = {value}\n"
-
-            data.remove(data[1])
-            data.insert(1,existing_param)
-            print(Fore.GREEN + f"{param} added in {filename}" + Fore.RESET)
+    with open(filename, "r") as f:
+        data = f.read()
+        instance_regex = re.compile(rf'module {inst_name}\s*#\(')
+        result = re.search(instance_regex, data)
+        if result:
+            new_param = f"\tparameter {param} = {value},\n"
+            new = data[:result.end()+1] + new_param + data[result.end()+1:] 
+            with open(filename, "w") as n:
+                n.write(new)
+                success = True
         else:
-            first_line = data[0].replace("(\n","#(\n")
-            data.remove(data[0])
-            data.insert(0,first_line)
-            data.insert(1,f"\tparameter {param}  \t = {value}\n)\n\n(\n")
-            print(Fore.GREEN + f"{param} added in {filename}" + Fore.RESET)
-        with open (filename,'w') as topfile:
-            topfile.writelines(data)
+            instance_regex = re.compile(rf'module {inst_name}')
+            result = re.search(instance_regex, data)
+            if result:
+                new_param = f"\n#(\n\tparameter {param} = {value}\n)\n"
+                new = data[:result.end()] + new_param + data[result.end():] 
+                with open(filename, "w") as n:
+                    n.write(new)
+                    success = True
+            else:
+                print(Fore.RED + f"Error: {inst_name} not found in {filename}" + Fore.RESET)
+                success = False
+        
             
 def parameter_json(filename,param,ranges,Baseboard_path):
     global success
@@ -65,8 +39,10 @@ def parameter_json(filename,param,ranges,Baseboard_path):
         data=json.load(j)
         try:
             if param in data['parameter']:
-                print(Fore.RED + f"{param} already exists in {filename}" + Fore.RESET)
-                print(Fore.RED + f"Please change the parameter name" + Fore.RESET)
+                filename=filename.replace(".json",".sv")
+                print(Fore.LIGHTRED_EX + f"{param} already exists in {filename}" + Fore.RESET)
+                print(Fore.LIGHTRED_EX + f"Please change the parameter name" + Fore.RESET)
+                success = False
                 return
             elif data.get('parameter'):
                  data['parameter'][param]=ranges
@@ -80,3 +56,100 @@ def parameter_json(filename,param,ranges,Baseboard_path):
                 new = json.dumps(data,indent=4)
                 n.write(new)
                 success = True
+    
+#############################################################################################################
+def ovride_prms(filename,prv_w, nw_w,inst):
+    module_name = str(filename).replace('.sv','')
+    with open(filename, 'r') as file:
+        content = file.read()
+        match1 = re.search(rf'.*#\(\s*(.*?)\s*\)\s\S\s{inst}', content, re.DOTALL)
+        match2 = re.search(rf'{module_name}\s*#\(\s*([^)]*)\s*\)', content, re.DOTALL)
+        if match2:
+            mod_parm = match2.group(1).rstrip()
+            prm_dec = [True for prm in nw_w if prm in mod_parm ]
+        match = re.search(rf'#\(\s*(.*?)\s*\)\s\S\s{inst}', content, re.DOTALL)
+        if match1:
+            ext_pram = match1.group(1).split()
+        if match:
+            existing_prm = match.group(1)
+            existing_prm += "" if existing_prm else ""
+            if prm_dec:
+                Body = "".join([f'\n\t.{prm}\t\t\t\t({("".join(rng))},'for prm, rng in zip(prv_w, nw_w) if f".{prm}" not in ext_pram])
+                if Body:
+                    print(Fore.GREEN + f"{prv_w} added to {inst}" + Fore.RESET)
+                else:
+                    print(
+                        Fore.RED + f"{prv_w} already exists in {inst}" + Fore.RESET)
+                    exit()
+                new_text = f"{existing_prm}),{Body.rstrip(',')}"
+                content = content.replace(match.group(1), new_text)
+            else:
+                print(Fore.RED + f"Please declare {nw_w} in parameters." + Fore.RESET)
+        else:
+            if prm_dec:
+                Body = "".join([f'\n\t.{prm}\t\t\t\t({("".join(rng))}),' for prm, rng in zip(prv_w, nw_w)])
+                if Body:
+                    print(Fore.GREEN + f"{prv_w} added to {inst}" + Fore.RESET)
+                    pattern_text = f"\n#(\n\t{Body.rstrip(',')}\n)\n{inst}"
+                    content = content.replace(f"{inst}", pattern_text)
+            else:
+                print(Fore.RED + f"Please declare {nw_w} in parameters." + Fore.RESET)
+            
+        with open(filename, 'w') as f:
+            f.write(content)
+
+# def adding_localparam(fileName,prms,wid,inst=None):
+#     if inst is None:
+#         param = "".join([f'parameter\t{p}\t= {w};\n' for p,w in zip(prms,wid)])
+#         import plug
+#         plug.io_outside(param)
+#     else:
+#         with open(fileName,"r+") as f:
+#             content = f.readlines()
+#             for string in content:
+#                 if f"{inst}" in string:
+#                     index = content.index(string)
+#                     break
+#             param = "".join([f'parameter\t{p}\t= {w};\n' for p,w in zip(prms,wid)])
+#             content.insert(index,param)
+#         with open(fileName,'w') as write_file:
+#                 write_file.writelines(content)
+
+
+# local_param("clock.sv","SEC","wids",'32')
+
+# if __name__ == '__main__':
+#     parser = argparse.ArgumentParser(
+#         description='Add parameters to a Verilog module')
+#     parser.add_argument('-f', '--filename', type=str,
+#                         help='the name of the Verilog file to modify')
+#     parser.add_argument('-nw', '--new_width', type=str, nargs='+',
+#                         help='the name of the parameter(s) to add')
+#     parser.add_argument('-ow', '--old_width', type=str, nargs='+',
+#                         help='the name of the parameter(s) to add')
+#     parser.add_argument('-n', '--instance', type=str,
+#                         help='the name of instance in which parameter need to be override')
+#     args = parser.parse_args()
+
+#     ovride_prms(args.filename, args.instance,args.old_width,args.new_width)
+
+###################################################################################################
+def adding_localparam(fileName,prms,wid):
+        param = "".join([f'parameter\t{prms}\t= {wid};'])
+        io_outside(fileName,param)
+        
+def io_outside(fileName,ios):
+    m_name = fileName.replace(".sv", "")
+    with open(fileName, 'r') as f:
+        file_contents = f.read()
+    pattern = rf".*?(module\s+{m_name}\s*((?:[\s\S]*?);))"
+    match = re.search(pattern, file_contents)
+    if match:
+        block = match.group(1)
+        new_data = block + f"\n{ios}"
+        file_contents = re.sub(pattern, new_data, file_contents)
+        with open(fileName, 'w') as f:
+            f.write(file_contents)
+    else:
+        print(Fore.RED + f"Module {m_name} not found" + Fore.RESET)
+        exit()

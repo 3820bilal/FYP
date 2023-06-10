@@ -1,4 +1,4 @@
-# import re
+#!/usr/bin/python3
 def get_ranges_from_file(filename):
     data = {'ports': {}}
     ranges = {}

@@ -4,15 +4,15 @@ import json
 import argparse
 from colorama import Fore
 
-LAGO_DIR=''
+LEGO_DIR=''
 Top_level_file=''
 #################### LAGO ROOT address #######################################
-def LAGO_USR_INFO():
-        global LAGO_DIR,Top_level_file
-        Linux_file_path = os.path.expanduser("~/.LAGO_USR_INFO")
+def LEGO_USR_INFO():
+        global LEGO_DIR,Top_level_file
+        Linux_file_path = os.path.expanduser("~/.LEGO_USR_INFO")
         with open(Linux_file_path, "r") as Shell_file:
             sh_file=Shell_file.readlines()
-            LAGO_DIR=sh_file[0].replace("LAGO_DIR=","")+"/files/"
+            LEGO_DIR=sh_file[0].replace("LEGO_DIR=","")+"/files/";
             if Top_level_file:
              if f"TOP_FILE={Top_level_file}\n" in sh_file:
                 pass
@@ -21,12 +21,12 @@ def LAGO_USR_INFO():
                 exit()
             else:
                 Top_level_file=sh_file[-1]
-        LAGO_DIR=LAGO_DIR.replace("\n","")
+        LEGO_DIR=LEGO_DIR.replace("\n","")
         Top_level_file=Top_level_file.replace("TOP_FILE=",'')
 ##############################################################################
 CURRENT_DIR=os.getcwd();
 
-# port = 'count_hrs'
+port = 'count_hrs'
 # new_name = 'myclock'
 def rename_module(fileName,old_name,new_name): 
     new_lines =[]
@@ -90,7 +90,7 @@ if __name__ == '__main__':
 
     parser.add_argument('-f','--file_name',type=str, help='name of file where instance or port need to be renamed')
     parser.add_argument('-e','--earlier',type=str, help='name of file where instance or port need to be renamed')
-    parser.add_argument('-c','--current',type=str, help='name of file where instance or port need to be renamed')
+    parser.add_argument('-n','--new_name',type=str, help='name of file where instance or port need to be renamed')
 
     parser.add_argument('-p','--port',type=str, help='name of port need to be renamed')
     parser.add_argument('-i','--instance',type=str, help='name of instance need to be renamed')
@@ -98,15 +98,19 @@ if __name__ == '__main__':
     args = parser.parse_args()
     Top_level_file = args.file_name
     erlier_name = args.earlier
-    current_name = args.current
-    LAGO_USR_INFO()
+    new_name = args.new_name
+    LEGO_USR_INFO()
     Json_Top_file=Top_level_file.replace(".sv",'')
-    Baseboard_path = os.path.join(LAGO_DIR,'Baseboard')
+    Baseboard_path = os.path.join(LEGO_DIR,'Baseboard')
 
 
     if args.port:
-        rename_port(Top_level_file,erlier_name,current_name)
-        update_port_name(erlier_name,current_name)
+        rename_port(Top_level_file,erlier_name,new_name)
+        update_port_name(erlier_name,new_name)
     if args.instance:
-        update_module_name(erlier_name,current_name)
-        rename_module(Top_level_file,erlier_name,current_name)
+        update_module_name(erlier_name,new_name)
+        rename_module(Top_level_file,erlier_name,new_name)
+    else:
+        print("Please provide the arguments")
+        print("Use -h or --help for more information")
+        exit()

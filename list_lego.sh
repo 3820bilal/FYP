@@ -1,11 +1,11 @@
 #!/bin/bash
-. ~/.LAGO_USR_INFO
+. ~/.LEGO_USR_INFO
 RED=$'\e[1;31m';
 YELLOW=$'\e[1;33m';
 WHITE=$'\e[1;37m';
 GREEN=$'\e[1;32m';
 
-PATH="${LAGO_DIR}/files/library"
+PATH="${LEGO_DIR}/files/library"
 USAGE(){
 echo -e ${YELLOW} "USAGE:\n 1) To see library files\n\t list_lagos \n 2) To view each file \n\t list_lagos -f [filename] \n 3) To edit file \n\t list_lago -fe [filename] ";
 }
@@ -16,7 +16,7 @@ then
 	then
 	      /bin/tree
 		exit
-	elif [[ $# -eq 2 && $1 == '-f' ]]
+	elif [[ $# -eq 2 && $1 == '-f' || $1 == '--file' ]]
 	then
 		if [[ -f $2 ]]
 		then
@@ -26,7 +26,7 @@ then
 			echo "$1: not exists ";
 			exit
 		fi
-	elif [[ $# -eq 2 && $1 == '-fe' ]]
+	elif [[ $# -eq 2 && $1 == '-e' || $1 == '--edit' ]]
 	then
 		if [[ -f $2 ]]
 		then

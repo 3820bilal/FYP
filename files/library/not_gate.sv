@@ -1,4 +1,5 @@
-module not_gate(
+module not_gate
+(
 input in,
 output reg out
 );

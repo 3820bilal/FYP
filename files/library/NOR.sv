@@ -1,8 +1,9 @@
-module OR(
+module OR
+(
     input in1,
     input in2,
     output reg out
-    );
+);
     
     
  always@*
