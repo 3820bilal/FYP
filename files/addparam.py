@@ -2,6 +2,7 @@
 import json
 from colorama import Fore
 import re
+from create import tabsize
 success = False
 def adding_parameters(filename, param, value):
     inst_name = filename.replace(".sv","")
@@ -13,7 +14,7 @@ def adding_parameters(filename, param, value):
         instance_regex = re.compile(rf'module {inst_name}\s*#\(')
         result = re.search(instance_regex, data)
         if result:
-            new_param = f"\tparameter {param} = {value},\n"
+            new_param = f"\t parameter {param} = {value},\n"
             new = data[:result.end()+1] + new_param + data[result.end()+1:] 
             with open(filename, "w") as n:
                 n.write(new)
@@ -22,7 +23,7 @@ def adding_parameters(filename, param, value):
             instance_regex = re.compile(rf'module {inst_name}')
             result = re.search(instance_regex, data)
             if result:
-                new_param = f"\n#(\n\tparameter {param} = {value}\n)\n"
+                new_param = f"\n#(\n \t parameter {param} = {value}\n)\n"
                 new = data[:result.end()] + new_param + data[result.end():] 
                 with open(filename, "w") as n:
                     n.write(new)
@@ -37,6 +38,15 @@ def parameter_json(filename,param,ranges,Baseboard_path):
     filename=filename.replace(".sv",".json")
     with open (f"{Baseboard_path}/{filename}",'r') as j:
         data=json.load(j)
+        for key, value in data['ports'].items():
+            if param in value['range']:
+                new_range = value['range'].replace(param, ranges)
+                start,end = new_range.split(':')
+                start=start.replace("[","")
+                end=end.replace("]","")
+                start=int(start.split("-")[0]) - int(start.split("-")[1])
+                new_range = f'[{start}:{end}]'
+                data['ports'][key] = {'type': value['type'], 'range': new_range}
         try:
             if param in data['parameter']:
                 filename=filename.replace(".json",".sv")
@@ -46,6 +56,8 @@ def parameter_json(filename,param,ranges,Baseboard_path):
                 return
             elif data.get('parameter'):
                  data['parameter'][param]=ranges
+                 print(data['ports'])
+
                  with open (f"{Baseboard_path}/{filename}",'w') as n:
                     new = json.dumps(data,indent=4)
                     n.write(new)
@@ -57,8 +69,7 @@ def parameter_json(filename,param,ranges,Baseboard_path):
                 n.write(new)
                 success = True
     
-#############################################################################################################
-def ovride_prms(filename,prv_w, nw_w,inst):
+def ovride_prms(filename,nw_w,prv_w,inst):
     module_name = str(filename).replace('.sv','')
     with open(filename, 'r') as file:
         content = file.read()
@@ -74,7 +85,7 @@ def ovride_prms(filename,prv_w, nw_w,inst):
             existing_prm = match.group(1)
             existing_prm += "" if existing_prm else ""
             if prm_dec:
-                Body = "".join([f'\n\t.{prm}\t\t\t\t({("".join(rng))},'for prm, rng in zip(prv_w, nw_w) if f".{prm}" not in ext_pram])
+                Body = "".join([f'\n.{prm}'.ljust(tabsize)+f'({("".join(rng))},'for prm, rng in zip(prv_w, nw_w) if f".{prm}" not in ext_pram])
                 if Body:
                     print(Fore.GREEN + f"{prv_w} added to {inst}" + Fore.RESET)
                 else:
@@ -87,7 +98,7 @@ def ovride_prms(filename,prv_w, nw_w,inst):
                 print(Fore.RED + f"Please declare {nw_w} in parameters." + Fore.RESET)
         else:
             if prm_dec:
-                Body = "".join([f'\n\t.{prm}\t\t\t\t({("".join(rng))}),' for prm, rng in zip(prv_w, nw_w)])
+                Body = "".join([f'\n.{prm}'.ljust(tabsize)+f'({("".join(rng))}),' for prm, rng in zip(prv_w, nw_w)])
                 if Body:
                     print(Fore.GREEN + f"{prv_w} added to {inst}" + Fore.RESET)
                     pattern_text = f"\n#(\n\t{Body.rstrip(',')}\n)\n{inst}"
@@ -98,42 +109,6 @@ def ovride_prms(filename,prv_w, nw_w,inst):
         with open(filename, 'w') as f:
             f.write(content)
 
-# def adding_localparam(fileName,prms,wid,inst=None):
-#     if inst is None:
-#         param = "".join([f'parameter\t{p}\t= {w};\n' for p,w in zip(prms,wid)])
-#         import plug
-#         plug.io_outside(param)
-#     else:
-#         with open(fileName,"r+") as f:
-#             content = f.readlines()
-#             for string in content:
-#                 if f"{inst}" in string:
-#                     index = content.index(string)
-#                     break
-#             param = "".join([f'parameter\t{p}\t= {w};\n' for p,w in zip(prms,wid)])
-#             content.insert(index,param)
-#         with open(fileName,'w') as write_file:
-#                 write_file.writelines(content)
-
-
-# local_param("clock.sv","SEC","wids",'32')
-
-# if __name__ == '__main__':
-#     parser = argparse.ArgumentParser(
-#         description='Add parameters to a Verilog module')
-#     parser.add_argument('-f', '--filename', type=str,
-#                         help='the name of the Verilog file to modify')
-#     parser.add_argument('-nw', '--new_width', type=str, nargs='+',
-#                         help='the name of the parameter(s) to add')
-#     parser.add_argument('-ow', '--old_width', type=str, nargs='+',
-#                         help='the name of the parameter(s) to add')
-#     parser.add_argument('-n', '--instance', type=str,
-#                         help='the name of instance in which parameter need to be override')
-#     args = parser.parse_args()
-
-#     ovride_prms(args.filename, args.instance,args.old_width,args.new_width)
-
-###################################################################################################
 def adding_localparam(fileName,prms,wid):
         param = "".join([f'parameter\t{prms}\t= {wid};'])
         io_outside(fileName,param)

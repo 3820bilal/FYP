@@ -2,6 +2,7 @@
 import json
 from colorama import Fore
 import re
+from create import tabsize
 success=False
 def connect_to_reg(Top_level_file,reg_name,instance_name,port_name,Baseboard_path):
     json_file=Top_level_file.replace(".sv",".json")
@@ -20,13 +21,13 @@ def connect_to_reg(Top_level_file,reg_name,instance_name,port_name,Baseboard_pat
                                 if f'.{port_name}' in string:
                                     if content[index2+1].startswith("."):
                                         content.pop(index2)
-                                        content.insert(index2,f".{port_name} \t\t ({reg_name}),\n")
+                                        content.insert(index2,f".{port_name}".ljust(tabsize)+f"({reg_name}),\n")
                                         print(Fore.LIGHTGREEN_EX + f'Port Connected to {reg_name}' + Fore.RESET)
                                         with open (f'{Top_level_file}','w') as f:
                                             f.writelines(content)
                                     else:
                                         content.pop(index2)
-                                        content.insert(index2,f".{port_name} \t\t ({reg_name})\n")
+                                        content.insert(index2,f".{port_name}".ljust(tabsize)+f"({reg_name})\n")
                                         print(Fore.LIGHTGREEN_EX + f'Port Connected to {reg_name}' + Fore.RESET)
                                         with open (f'{Top_level_file}','w') as f:
                                             f.writelines(content)
@@ -54,13 +55,13 @@ def connect_to_wire(Top_level_file,wire_name,instance_name,port_name,Baseboard_p
                                 if f'.{port_name}' in string:
                                     if content[index2+1].startswith("."):
                                         content.pop(index2)
-                                        content.insert(index2,f".{port_name} \t\t ({wire_name}),\n")
+                                        content.insert(index2,f".{port_name}".ljust(tabsize)+f"({wire_name}),\n")
                                         print(Fore.LIGHTGREEN_EX + f'Port Connected to {wire_name}' + Fore.RESET)
                                         with open (f'{Top_level_file}','w') as f:
                                             f.writelines(content)
                                     else:
                                         content.pop(index2)
-                                        content.insert(index2,f".{port_name} \t\t ({wire_name})\n")
+                                        content.insert(index2,f".{port_name}".ljust(tabsize)+f"({wire_name})\n")
                                         print(Fore.LIGHTGREEN_EX + f'Port Connected to {wire_name}' + Fore.RESET)
                                         with open (f'{Top_level_file}','w') as f:
                                             f.writelines(content)
@@ -117,9 +118,9 @@ def connect_to_IO(found,Top_level_file, instance1, input_ports, output_ports):
                     else:
                         connected_ports_list.append(output_port)
                     connected_ports_str = '{{{}}}'.format(', '.join(connected_ports_list))
-                    block = re.sub(pattern, fr'.{input_port} \t\t\t\t({connected_ports_str})', block)
+                    block = re.sub(pattern, fr'.{input_port}'.ljust(tabsize)+f'({connected_ports_str})', block)
                 else:
-                    block = re.sub(pattern, f'.{input_port} \t\t\t\t({output_port})', block)       
+                    block = re.sub(pattern, f'.{input_port}'.ljust(tabsize)+f'({output_port})', block)       
             pattern = rf'{instance1}\s*(([\s\S]*?));'
             content = re.sub(pattern, block, content)
             print(Fore.LIGHTGREEN_EX + f'Ports Connected to IO ' + Fore.RESET)
@@ -142,13 +143,13 @@ def connect_param(Top_level_file,param,instance,ports,Baseboard_path,data):
                                 if f'.{ports}' in string:
                                     if content[index2+1].startswith("."):
                                         content.pop(index2)
-                                        content.insert(index2,f".{ports} \t\t ({param}),\n")
+                                        content.insert(index2,f".{ports}".ljust(tabsize)+f"({param}),\n")
                                         print(Fore.LIGHTGREEN_EX + f'Port Connected to {param}' + Fore.RESET)
                                         with open (f'{Top_level_file}','w') as f:
                                             f.writelines(content)
                                     else:
                                         content.pop(index2)
-                                        content.insert(index2,f".{ports} \t\t ({param})\n")
+                                        content.insert(index2,f".{ports}".ljust(tabsize)+f"({param})\n")
                                         print(Fore.LIGHTGREEN_EX + f'Port Connected to {param}' + Fore.RESET)
                                         with open (f'{Top_level_file}','w') as f:
                                             f.writelines(content)          
@@ -180,13 +181,13 @@ def connect_param(Top_level_file,param,instance,ports,Baseboard_path,data):
                             if index2>index1:
                                 if content[index2+1].startswith("."):
                                     content.pop(index2)
-                                    content.insert(index2,f".{ports} \t\t ({param}),\n")
+                                    content.insert(index2,f".{ports}".ljust(tabsize)+f"({param}),\n")
                                     print(Fore.LIGHTGREEN_EX + 'Port Connected to' + Fore.RESET)
                                     with open (f'{Top_level_file}','w') as f:
                                         f.writelines(content)
                                 else:
                                     content.pop(index2)
-                                    content.insert(index2,f".{ports} \t\t ({param})\n")
+                                    content.insert(index2,f".{ports}".ljust(tabsize)+f"({param})\n")
                                     print(Fore.LIGHTGREEN_EX + 'Port Connected to reg' + Fore.RESET)
                                     with open (f'{Top_level_file}','w') as f:
                                         f.writelines(content)
@@ -218,14 +219,13 @@ def connect_instances(fille_name,instance1,input_port,instance2,output_ports,Bas
                     if index2>index1:
                         if content[index2+1].startswith("."):
                             content.pop(index2)
-                            content.insert(index2,f".{input_port} \t\t\t ({output_ports}),\n")
-
+                            content.insert(index2,f".{input_port}".ljust(tabsize)+f" ({output_ports}),\n")
                             with open (f'{fille_name}','w') as f:
                                 f.writelines(content)
                                 print(Fore.LIGHTGREEN_EX + 'Port Connected to' + Fore.RESET)
                         else:
                             content.pop(index2)
-                            content.insert(index2,f".{input_port} \t\t\t ({output_ports}),\n")
+                            content.insert(index2,f".{input_port}".ljust(tabsize)+f" ({output_ports}),\n")
                             with open (f'{fille_name}','w') as f:
                                 f.writelines(content)
                                 print(Fore.LIGHTGREEN_EX + 'Port Connected to reg' + Fore.RESET)    
@@ -273,16 +273,55 @@ def connect_localparam(file_name,local_param,instance,port):
                 if index2>index1:
                     if content[index2+1].startswith("."):
                         content.pop(index2)
-                        content.insert(index2,f".{port} \t\t\t ({local_param}),\n")
+                        content.insert(index2,f".{port}".ljust(tabsize)+f" ({local_param}),\n")
                         with open (f'{file_name}','w') as f:
                             f.writelines(content)
                             print(Fore.LIGHTGREEN_EX + f'Port Connected to {local_param}' + Fore.RESET)
                     else:
                         content.pop(index2)
-                        content.insert(index2,f".{port} \t\t\t ({local_param}),\n")
+                        content.insert(index2,f".{port}".ljust(tabsize)+f" ({local_param}),\n")
                         with open (f'{file_name}','w') as f:
                             f.writelines(content)
                             print(Fore.LIGHTGREEN_EX + f'Port Connected to {local_param}' + Fore.RESET)
         except: 
             print(Fore.RED,f"{instance} is not present in {file_name}!",Fore.RESET)
             exit()
+
+def check_json_inst_ports(Top_level_file,instance,ports,Baseboard_path):
+    json_file=Top_level_file.replace(".sv",'.json')
+    with open(f"{Baseboard_path}/{json_file}") as j:
+        data=json.load(j)
+        try:
+            if ports in data[instance]['ports']:
+                return True
+            else:
+                print(Fore.RED,f"{ports} is not present in {instance}!",Fore.RESET)
+                exit()
+        except:
+            print(Fore.RED,f"{instance} is not present in {Top_level_file}!",Fore.RESET)
+            exit()
+
+def connect_to_value(Top_level_file,instance,port,value):
+     with open (f'{Top_level_file}','r') as f:
+                    content=f.readlines()
+                    index1=False;index2=False
+                    for string in content:
+                       if instance in string:
+                            index2=index1=content.index(string)
+                            for string in content[index1+1:]:
+                                index2+=1
+                                if f'.{port}' in string:
+                                    if content[index2+1].startswith("."):
+                                        content.pop(index2)
+                                        content.insert(index2,f".{port}".ljust(tabsize) +f"({value}),\n")
+                                        print(Fore.LIGHTGREEN_EX + f'Port Connected to {value}' + Fore.RESET)
+                                        with open (f'{Top_level_file}','w') as f:
+                                            f.writelines(content)
+                                            success=False
+                                    else:
+                                        content.pop(index2)
+                                        content.insert(index2,f".{port}".ljust(tabsize)+f"({value})\n")
+                                        print(Fore.LIGHTGREEN_EX + f'Port Connected to {value}' + Fore.RESET)
+                                        with open (f'{Top_level_file}','w') as f:
+                                            f.writelines(content)
+                                            success=False

@@ -7,9 +7,11 @@ import shutil
 import math
 import re
 from colorama import Fore
+from create import tabsize
 LEGO_DIR = ''
 Top_level_file = ''
 CURRENT_DIR = os.getcwd()
+
 #################### LAGO ROOT address #######################################
 
 
@@ -38,11 +40,20 @@ def copy_file(file):
     if not os.path.exists(f"{CURRENT_DIR}/{file}"):
         shutil.copy(library_file, CURRENT_DIR)
 
-
-def extract_data(file,instance):                   # it will open library file
-    global Top_level_file, CURRENT_DIR
+def extract_data(file,instance):               
+    global Top_level_file, CURRENT_DIR ,tabsize,library
+    #list only files in library not there extension
+    files = [os.path.splitext(f)[0] for f in os.listdir(library) if os.path.isfile(os.path.join(library, f))]
     with open(f"{file}", 'r') as f:
         lines = f.readlines()
+        for line in lines:
+            for file in files:
+                if file in line.split() :
+                    if '.'  in lines[lines.index(line)+1]: 
+                        file=os.path.join(library,f'{file}.sv')
+                        if not os.path.exists(f"{CURRENT_DIR}/{file}"):
+                            shutil.copy(file, CURRENT_DIR)
+
     in_module = False
     input_or_output_count = 0
     output_string = ""
@@ -59,11 +70,10 @@ def extract_data(file,instance):                   # it will open library file
             if "," in x:
                 x = x.split(",")[0]
             if input_or_output_count == sum(('input' in line) or ('output' in line) for line in lines):
-                output_string += '.' + x + '\t\t\t()\n'
+                output_string += '.' + x.ljust(tabsize) + '()\n'
             else:
-                output_string += '.' + x + '\t\t\t(),\n'
+                output_string += '.' + x.ljust(tabsize) +  '(),\n'
 
-    # open top level file for inst checking
     with open(f"{CURRENT_DIR}/{Top_level_file}", "r") as f:
         content = f.read()
         lines = content.split('\n')
@@ -72,7 +82,7 @@ def extract_data(file,instance):                   # it will open library file
                 print(Fore.RED +
                       f'Error: instance {instance} already exists at line {i+1}. Please Enter different name!' + Fore.RESET)
                 exit()
-        with open(f"{CURRENT_DIR}/{Top_level_file}", "a+") as f:  # open top file in append mode
+        with open(f"{CURRENT_DIR}/{Top_level_file}", "a+") as f:  
             if 'endmodule' in content:
                 r_end = (f.tell())-9
                 x = f.truncate(r_end)
@@ -102,12 +112,12 @@ def generating_mux(input_signals, output_signal, sl):
     val = math.log2(leng)
     if leng == 2:
         selct_lin = f'reg\t\t{sl};'
-        io_outside(selct_lin)
-        code = "always@*\n"
+        # io_outside(selct_lin)
+        code = "always@* begin\n"
         code += f"\tcase({sl})\n"
         for i, signal in enumerate(input_signals):
             code += f"\t1'd{i}: {str(output_signal)} = {signal};\n"
-        code += "\tendcase\n"
+        code += "\tendcase\nend\n"
         mux_code = code
     else:
         if val - math.floor(val) > rounding_threshold:
@@ -123,11 +133,11 @@ def generating_mux(input_signals, output_signal, sl):
             signlas = f'reg {ranges} {i_sig};'
             io_outside(signlas)
 
-            code = "always@*\n"
+            code = "always@*\tbegin\n"
             code += f"\tcase({sl})\n"
             for i, signal in enumerate(input_signals):
                 code += f"\t{rounded_value}'d{i}: {str(output_signal)} = {signal};\n"
-            code += "\tendcase\n"
+            code += "\tendcase\nend\n"
             mux_code = code
 
     # open top file in append mode
@@ -146,17 +156,17 @@ def generate_register(inp_sig=None,inp_ranges=None, out_sig=None ,out_ranges=Non
         if inp_sig:
             if inp_ranges is None:
                 inp_declaration = f'reg {inp_sig};'
-                io_outside(inp_declaration)
+                # io_outside(inp_declaration)
             else:
                 inp_declaration = f'reg {inp_ranges} {inp_sig};'
                 io_outside(inp_declaration)
         if out_sig:
             if out_ranges is None:
                 out_declaration = f'reg {out_sig};'
-                io_outside(out_declaration)
+                # io_outside(out_declaration)
             else:
                 out_declaration = f'reg {out_ranges} {out_sig};'
-                io_outside(out_declaration)
+                # io_outside(out_declaration)
                     
         code = f"always @(posedge clk)\nbegin\n\tif(reset)\n\tbegin\n"
         code += f"\t\t{out_sig} <= 0;\n"
@@ -176,7 +186,7 @@ def generate_register(inp_sig=None,inp_ranges=None, out_sig=None ,out_ranges=Non
         if out_sig:
             if out_ranges is None:
                 out_declaration = f'reg {out_sig};'
-                io_outside(out_declaration)
+                # io_outside(out_declaration)
             else:
                 out_declaration = f'reg {out_ranges} {out_sig};'
                 io_outside(out_declaration)
@@ -254,60 +264,98 @@ def create_instance(file_name,inst_name):
                 extract_data(library_file,instance)
     except:
         print("error occured! ")
+
+    #Function to declare a single input and single output combinational block
+def comb_block(fileName,output,input):
+    code = f"always@* {output} = {input};\n"
+    with open(f"{fileName}", "r") as f:
+        content = f.read()
+    with open(f"{fileName}", "a+") as f:
+        if 'endmodule' in content:
+            r_end = (f.tell())-9
+            x = f.truncate(r_end)
+            f.write('\n' + code)
+            f.write('\nendmodule')
+            print(Fore.GREEN,"combinational block declared successfully",Fore.RESET)
+
+#Function to declare a memory in file
+def mem_declaration(fileName,mem_name,wid,dep):
+    code = f"reg\t{wid} {mem_name} {dep};"
+    with open(f"{fileName}", "r") as f:
+        content = f.read()
+    with open(f"{fileName}", "a+") as f:
+        if 'endmodule' in content:
+            r_end = (f.tell())-9
+            x = f.truncate(r_end)
+            f.write('\n' + code)
+            f.write('\nendmodule')
+            print(Fore.GREEN,"memory declared successfully",Fore.RESET)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-inst',"--instance",help='Name of file from which instance is taken', type=str, nargs='+')
     parser.add_argument('-m',"--mux",action='store_true')
     parser.add_argument('-r',"--register",action='store_true')
     parser.add_argument('-t,','--topfile',help='Top level file name', type=str)
-
-    
     parser.add_argument('-n', '--instance_name', help='Name of instance',nargs='+')
    
-    parser.add_argument('-i', '--inputs',nargs='+',help='Input port name')
+    parser.add_argument('-i', '--inputs',type=str, help='Input port name')
+    parser.add_argument('-im', '--mux_inputs',type=str, help='Input port name',nargs='+')
     parser.add_argument('-ir', '--input_ranges',help='Input port range')
-    parser.add_argument('-o', '--outputs',help='Output port name')
+    parser.add_argument('-o', '--outputs',type=str,help='Output port name')
+    parser.add_argument('-om', '--mux_outputs',type=str,help='Output port name')
     parser.add_argument('-or', '--output_ranges',help='Output port range')
       
     parser.add_argument('-sl', '--select_line', type=str, help='Select line')
     
     parser.add_argument('-re', '--reset_signal', type=str, help='Select line')
     parser.add_argument('-en', '--enable_signal', type=str, help='Select line')
+    parser.add_argument("-w","--width_of_mem",type=str,help="width of memory",nargs='+')
+    parser.add_argument("-dp","--depth_of_mem",type=str,help="depth of memory",nargs='+')
+    parser.add_argument("-nm","--name_of_mem",type=str,help="name of memory",nargs='+')
+
     
     args = parser.parse_args()
     Top_level_file = args.topfile
     
-    LEGO_USR_INFO()  # ---->
+    LEGO_USR_INFO()
     Baseboard_path = os.path.join(LEGO_DIR, 'Baseboard')
     library = os.path.join(LEGO_DIR, 'library')
 
    
+    # if args.outputs and args.inputs:
+    #     for args.outputs, args.inputs in zip(args.outputs, args.inputs):
+    #         comb_block(Top_level_file,args.outputs,args.inputs)
+    #         exit()
+
+    if args.name_of_mem and args.width_of_mem and args.depth_of_mem:
+        for args.name_of_mem, args.width_of_mem, args.depth_of_mem in zip(args.name_of_mem, args.width_of_mem, args.depth_of_mem):
+            mem_declaration(Top_level_file,args.name_of_mem,args.width_of_mem,args.depth_of_mem)
+            exit()
     
     if args.instance:
-        if  len(args.instance) == 1 and len(args.instance_name) > 1:  
-            for i in args.instance_name:
-                library_file = os.path.join(library, f"{args.instance[0]}")
-                create_instance(args.instance[0],i)
-            exit()
-        elif args.instance and args.instance_name:
-            for file,name in zip(args.instance,args.instance_name):
-                library_file = os.path.join(library, file)
-                create_instance(file,name)
-            exit()
-        elif args.instance:
-            for file in args.instance:
-                library_file = os.path.join(library, file)
-                create_instance(file,None)
-            exit()
-        else:
-            print("Please provide all the required arguments\n")
-            print("plug -inst <file_name> -n <instance_name> \n")
-            exit()
+        try:
+            if  len(args.instance) == 1 and len(args.instance_name) > 1:  
+                for i in args.instance_name:
+                    library_file = os.path.join(library, f"{args.instance[0]}")
+                    create_instance(args.instance[0],i)
+            elif args.instance and args.instance_name:
+                for file,name in zip(args.instance,args.instance_name):
+                    library_file = os.path.join(library, file)
+                    create_instance(file,name)
+        except:
+            if args.instance:
+                for file in args.instance:
+                    library_file = os.path.join(library, file)
+                    create_instance(file,None)
+        exit()
             
     if args.mux:
-        if args.inputs and args.outputs and args.select_line:
-            generating_mux(args.inputs, args.outputs,args.select_line)
+        if args.mux_inputs and args.mux_outputs and args.select_line:
+            generating_mux(args.mux_inputs, args.mux_outputs,args.select_line)
             exit()
+            
         else:
             print("Please provide all the required arguments\n")
             print("plug -m -i <inputs> -ir <input_ranges> -o <output> -or <output_ranges> -sl <select_line> \n")
@@ -321,6 +369,4 @@ if __name__ == '__main__':
             print("Please provide all the required arguments\n")
             print("plug -r -i <input_signal> -o <output_signal> -en <enable_signal> -ir <input_range> -or <output_range> \n")
             exit()
-    else:
-        print("Please select bewteen inst,reg,mux")
-        exit()
+   

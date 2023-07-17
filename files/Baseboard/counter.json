@@ -1,0 +1,41 @@
+{
+    "toplevelfile": "counter.sv",
+    "ports": {
+        "clk": {
+            "type": "input",
+            "range": "None"
+        },
+        "reset": {
+            "type": "input",
+            "range": "None"
+        },
+        "increment": {
+            "type": "input",
+            "range": "None"
+        },
+        "decrement": {
+            "type": "input",
+            "range": "None"
+        },
+        "count": {
+            "type": "output",
+            "range": "[3:0]"
+        }
+    },
+    "OR_gate": {
+        "ports": {
+            "in1": {
+                "type": "input",
+                "range": "None"
+            },
+            "in2": {
+                "type": "input",
+                "range": "None"
+            },
+            "out": {
+                "type": "output",
+                "range": "None"
+            }
+        }
+    }
+}

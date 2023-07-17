@@ -1,0 +1,121 @@
+{
+    "toplevelfile": "ripple_carry_adder.sv",
+    "ports": {
+        "clk": {
+            "type": "input",
+            "range": "None"
+        },
+        "reset": {
+            "type": "input",
+            "range": "None"
+        },
+        "a0": {
+            "type": "input",
+            "range": "None"
+        },
+        "b0": {
+            "type": "input",
+            "range": "None"
+        },
+        "a1": {
+            "type": "input",
+            "range": "None"
+        },
+        "b1": {
+            "type": "input",
+            "range": "None"
+        },
+        "carry0": {
+            "type": "output",
+            "range": "None"
+        },
+        "carry1": {
+            "type": "output",
+            "range": "None"
+        },
+        "carry2": {
+            "type": "output",
+            "range": "None"
+        },
+        "sum0": {
+            "type": "output",
+            "range": "None"
+        },
+        "sum1\r": {
+            "type": "output",
+            "range": "None"
+        }
+    },
+    "counter": {
+        "ports": {
+            "clk": {
+                "type": "input",
+                "range": "None"
+            },
+            "reset": {
+                "type": "input",
+                "range": "None"
+            },
+            "en": {
+                "type": "input",
+                "range": "None"
+            },
+            "clr": {
+                "type": "input",
+                "range": "None"
+            },
+            "count": {
+                "type": "output",
+                "range": "[15:0]"
+            }
+        }
+    },
+    "full_adder": {
+        "ports": {
+            "x": {
+                "type": "input",
+                "range": "None"
+            },
+            "y": {
+                "type": "input",
+                "range": "None"
+            },
+            "z": {
+                "type": "input",
+                "range": "None"
+            },
+            "sum": {
+                "type": "output",
+                "range": "None"
+            },
+            "carry": {
+                "type": "output",
+                "range": "None"
+            }
+        }
+    },
+    "inst1": {
+        "ports": {
+            "x": {
+                "type": "input",
+                "range": "None"
+            },
+            "y": {
+                "type": "input",
+                "range": "None"
+            },
+            "z": {
+                "type": "input",
+                "range": "None"
+            },
+            "sum": {
+                "type": "output",
+                "range": "None"
+            },
+            "carry": {
+                "type": "output",
+                "range": "None"
+            }
+        }
+    }
+}
