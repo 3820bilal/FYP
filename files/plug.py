@@ -48,8 +48,8 @@ def extract_data(file,instance):
         lines = f.readlines()
         for line in lines:
             for file in files:
-                if file in line.split() :
-                    if '.'  in lines[lines.index(line)+1]: 
+                if file in line.split():
+                    if '.'  in lines[lines.index(line)+1] or '#(' in lines[lines.index(line)+1]: 
                         file=os.path.join(library,f'{file}.sv')
                         if not os.path.exists(f"{CURRENT_DIR}/{file}"):
                             shutil.copy(file, CURRENT_DIR)
@@ -112,12 +112,12 @@ def generating_mux(input_signals, output_signal, sl):
     val = math.log2(leng)
     if leng == 2:
         selct_lin = f'reg\t\t{sl};'
-        # io_outside(selct_lin)
-        code = "always@* begin\n"
+        io_outside(selct_lin)
+        code = "always@*\n"
         code += f"\tcase({sl})\n"
         for i, signal in enumerate(input_signals):
             code += f"\t1'd{i}: {str(output_signal)} = {signal};\n"
-        code += "\tendcase\nend\n"
+        code += "\tendcase\n"
         mux_code = code
     else:
         if val - math.floor(val) > rounding_threshold:
@@ -133,11 +133,11 @@ def generating_mux(input_signals, output_signal, sl):
             signlas = f'reg {ranges} {i_sig};'
             io_outside(signlas)
 
-            code = "always@*\tbegin\n"
+            code = "always@*\n"
             code += f"\tcase({sl})\n"
             for i, signal in enumerate(input_signals):
                 code += f"\t{rounded_value}'d{i}: {str(output_signal)} = {signal};\n"
-            code += "\tendcase\nend\n"
+            code += "\tendcase\n"
             mux_code = code
 
     # open top file in append mode
@@ -156,17 +156,17 @@ def generate_register(inp_sig=None,inp_ranges=None, out_sig=None ,out_ranges=Non
         if inp_sig:
             if inp_ranges is None:
                 inp_declaration = f'reg {inp_sig};'
-                # io_outside(inp_declaration)
+                io_outside(inp_declaration)
             else:
                 inp_declaration = f'reg {inp_ranges} {inp_sig};'
                 io_outside(inp_declaration)
         if out_sig:
             if out_ranges is None:
                 out_declaration = f'reg {out_sig};'
-                # io_outside(out_declaration)
+                io_outside(out_declaration)
             else:
                 out_declaration = f'reg {out_ranges} {out_sig};'
-                # io_outside(out_declaration)
+                io_outside(out_declaration)
                     
         code = f"always @(posedge clk)\nbegin\n\tif(reset)\n\tbegin\n"
         code += f"\t\t{out_sig} <= 0;\n"
@@ -186,7 +186,7 @@ def generate_register(inp_sig=None,inp_ranges=None, out_sig=None ,out_ranges=Non
         if out_sig:
             if out_ranges is None:
                 out_declaration = f'reg {out_sig};'
-                # io_outside(out_declaration)
+                io_outside(out_declaration)
             else:
                 out_declaration = f'reg {out_ranges} {out_sig};'
                 io_outside(out_declaration)
@@ -300,11 +300,9 @@ if __name__ == '__main__':
     parser.add_argument('-t,','--topfile',help='Top level file name', type=str)
     parser.add_argument('-n', '--instance_name', help='Name of instance',nargs='+')
    
-    parser.add_argument('-i', '--inputs',type=str, help='Input port name')
-    parser.add_argument('-im', '--mux_inputs',type=str, help='Input port name',nargs='+')
+    parser.add_argument('-i', '--inputs',nargs='+',help='Input port name')
     parser.add_argument('-ir', '--input_ranges',help='Input port range')
-    parser.add_argument('-o', '--outputs',type=str,help='Output port name')
-    parser.add_argument('-om', '--mux_outputs',type=str,help='Output port name')
+    parser.add_argument('-o', '--outputs',help='Output port name',nargs='+')
     parser.add_argument('-or', '--output_ranges',help='Output port range')
       
     parser.add_argument('-sl', '--select_line', type=str, help='Select line')
@@ -324,10 +322,10 @@ if __name__ == '__main__':
     library = os.path.join(LEGO_DIR, 'library')
 
    
-    # if args.outputs and args.inputs:
-    #     for args.outputs, args.inputs in zip(args.outputs, args.inputs):
-    #         comb_block(Top_level_file,args.outputs,args.inputs)
-    #         exit()
+    if args.outputs and args.inputs:
+        for args.outputs, args.inputs in zip(args.outputs, args.inputs):
+            comb_block(Top_level_file,args.outputs,args.inputs)
+            exit()
 
     if args.name_of_mem and args.width_of_mem and args.depth_of_mem:
         for args.name_of_mem, args.width_of_mem, args.depth_of_mem in zip(args.name_of_mem, args.width_of_mem, args.depth_of_mem):
@@ -352,10 +350,9 @@ if __name__ == '__main__':
         exit()
             
     if args.mux:
-        if args.mux_inputs and args.mux_outputs and args.select_line:
-            generating_mux(args.mux_inputs, args.mux_outputs,args.select_line)
+        if args.inputs and args.outputs and args.select_line:
+            generating_mux(args.inputs, args.outputs,args.select_line)
             exit()
-            
         else:
             print("Please provide all the required arguments\n")
             print("plug -m -i <inputs> -ir <input_ranges> -o <output> -or <output_ranges> -sl <select_line> \n")

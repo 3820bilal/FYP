@@ -52,12 +52,13 @@ def set_instance_name(f_name, inputs, outputs, input_ranges, output_ranges):
     else:
         Body = f'''module {m_name} (\ninput\tlogic\tclk,\ninput\tlogic\treset\n\n);\nendmodule'''
     Body = Body.expandtabs(tabsize)
-    # print(Body)
+    print(Body)
     return Body
 
 #########################################################
 def name():
     global inputs, outputs, input_ranges,f_name, output_ranges
+    f_name = f_name if f_name.endswith(".sv") else f_name + ".sv"
     with open(f_name, 'w+') as file:
         file.write(set_instance_name(f_name, inputs,outputs, input_ranges, output_ranges))
         print(Fore.GREEN + f"{f_name} created" + Fore.RESET)
